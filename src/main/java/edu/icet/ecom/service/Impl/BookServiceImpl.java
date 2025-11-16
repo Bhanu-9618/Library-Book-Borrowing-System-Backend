@@ -24,7 +24,8 @@ public class BookServiceImpl implements BookService {
                 bookDto.getPublisher(),
                 bookDto.getIsbn(),
                 bookDto.getCategory(),
-                bookDto.getAvailableCopies()
+                bookDto.getAvailableCopies(),
+                bookDto.getAvailability().toLowerCase()
         );
         bookRepository.save(bookEntity);
     }
@@ -41,7 +42,8 @@ public class BookServiceImpl implements BookService {
                             bookEntity.getPublisher(),
                             bookEntity.getIsbn(),
                             bookEntity.getCategory(),
-                            bookEntity.getAvailableCopies()
+                            bookEntity.getAvailableCopies(),
+                            bookEntity.getAvailability()
                     )
             );
         }
@@ -56,7 +58,8 @@ public class BookServiceImpl implements BookService {
                 bookDto.getPublisher(),
                 bookDto.getIsbn(),
                 bookDto.getCategory(),
-                bookDto.getAvailableCopies()
+                bookDto.getAvailableCopies(),
+                bookDto.getAvailability()
         );
         bookRepository.save(bookEntity);
     }
@@ -76,7 +79,8 @@ public class BookServiceImpl implements BookService {
                 bookEntity.getPublisher(),
                 bookEntity.getIsbn(),
                 bookEntity.getPublisher(),
-                bookEntity.getAvailableCopies()
+                bookEntity.getAvailableCopies(),
+                bookEntity.getAvailability()
         );
     }
 }

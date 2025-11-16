@@ -32,7 +32,7 @@ public class BorrowEntity {
 
     public BorrowEntity( LocalDate borrowdate, LocalDate dueDate, LocalDate returnDate, String status, Long id, String userid) {
 
-        this.borrowdate = borrowdate;
+        this.borrowdate = LocalDate.now();
         this.dueDate = dueDate;
         this.returnDate = returnDate;
         this.status = status;
@@ -46,3 +46,4 @@ public class BorrowEntity {
         this.userEntity = user;
     }
 }
+

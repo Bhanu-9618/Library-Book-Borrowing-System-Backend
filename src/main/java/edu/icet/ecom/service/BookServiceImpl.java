@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BookServiceImpl implements BookService{
@@ -61,5 +62,20 @@ public class BookServiceImpl implements BookService{
 
     public void delete(String id) {
         bookRepository.deleteById(Long.valueOf(id));
+    }
+
+    public BookDto searchById(String bookId){
+        Optional<BookEntity> byId = bookRepository.findById(Long.valueOf(bookId));
+
+        BookEntity bookEntity = byId.orElseThrow();
+        return new BookDto(
+                bookEntity.getId(),
+                bookEntity.getAuthor(),
+                bookEntity.getTitle(),
+                bookEntity.getPublisher(),
+                bookEntity.getIsbn(),
+                bookEntity.getPublisher(),
+                bookEntity.getAvailableCopies()
+        );
     }
 }

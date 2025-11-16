@@ -10,4 +10,5 @@ public interface BookService {
     List<BookDto> getAllDetails();
     void update(BookDto bookDto);
     void delete(String id);
+    BookDto searchById(String bookId);
 }

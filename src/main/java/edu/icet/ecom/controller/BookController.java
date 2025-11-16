@@ -36,4 +36,9 @@ public class BookController {
     public void delete(@PathVariable String id){
         bookService.delete(id);
     }
+
+    @GetMapping("id/{bookId}")
+    public BookDto searchById(@PathVariable String bookId){
+        return bookService.searchById(bookId);
+    }
 }

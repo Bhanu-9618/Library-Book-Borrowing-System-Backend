@@ -2,11 +2,11 @@ package edu.icet.ecom.controller;
 
 import edu.icet.ecom.model.dto.BookDto;
 import edu.icet.ecom.service.BookService;
+import edu.icet.ecom.service.BookServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/book")
@@ -21,4 +21,9 @@ public class BookController {
         System.out.println(bookDto);
     }
 
+    @GetMapping("/all")
+    public List<BookDto> getDetails(){
+        List<BookDto> bookDtoList = bookService.getAllDetails();
+        return bookDtoList;
+    }
 }

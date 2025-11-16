@@ -9,4 +9,5 @@ public interface BookService {
     void add(BookDto bookDto);
     List<BookDto> getAllDetails();
     void update(BookDto bookDto);
+    void delete(String id);
 }

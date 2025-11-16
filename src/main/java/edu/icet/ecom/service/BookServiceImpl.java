@@ -58,4 +58,8 @@ public class BookServiceImpl implements BookService{
         );
         bookRepository.save(bookEntity);
     }
+
+    public void delete(String id) {
+        bookRepository.deleteById(Long.valueOf(id));
+    }
 }

@@ -5,7 +5,6 @@ import edu.icet.ecom.model.entity.BookEntity;
 import edu.icet.ecom.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,5 +44,18 @@ public class BookServiceImpl implements BookService{
             );
         }
         return bookDtos;
+    }
+
+    public void update(BookDto bookDto) {
+        BookEntity bookEntity = new BookEntity(
+                bookDto.getId(),
+                bookDto.getTitle(),
+                bookDto.getAuthor(),
+                bookDto.getPublisher(),
+                bookDto.getIsbn(),
+                bookDto.getCategory(),
+                bookDto.getAvailableCopies()
+        );
+        bookRepository.save(bookEntity);
     }
 }

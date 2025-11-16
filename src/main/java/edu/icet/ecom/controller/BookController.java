@@ -26,4 +26,9 @@ public class BookController {
         List<BookDto> bookDtoList = bookService.getAllDetails();
         return bookDtoList;
     }
+
+    @PutMapping("/update")
+    public void update(@RequestBody BookDto bookDto){
+        bookService.update(bookDto);
+    }
 }

@@ -2,7 +2,6 @@ package edu.icet.ecom.controller;
 
 import edu.icet.ecom.model.dto.BookDto;
 import edu.icet.ecom.service.BookService;
-import edu.icet.ecom.service.BookServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

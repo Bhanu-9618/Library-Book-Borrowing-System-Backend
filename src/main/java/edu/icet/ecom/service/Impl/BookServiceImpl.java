@@ -1,8 +1,9 @@
-package edu.icet.ecom.service;
+package edu.icet.ecom.service.Impl;
 
 import edu.icet.ecom.model.dto.BookDto;
 import edu.icet.ecom.model.entity.BookEntity;
 import edu.icet.ecom.repository.BookRepository;
+import edu.icet.ecom.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class BookServiceImpl implements BookService{
+public class BookServiceImpl implements BookService {
 
     @Autowired
     BookRepository bookRepository;

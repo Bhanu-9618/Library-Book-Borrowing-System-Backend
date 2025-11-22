@@ -7,6 +7,7 @@ import edu.icet.ecom.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,6 @@ public class UserServiceImpl implements UserService {
 
     public void save(UserDto user){
         UserEntity userEntity = new UserEntity(
-                user.getUserid(),
                 user.getName(),
                 user.getEmail(),
                 user.getPhone(),
@@ -35,12 +35,12 @@ public class UserServiceImpl implements UserService {
 
         for (UserEntity userEntity : userEntities){
             users.add( new UserDto(
-                            userEntity.getUserid(),
-                            userEntity.getName(),
-                            userEntity.getEmail(),
-                            userEntity.getPhone(),
-                            userEntity.getAddress(),
-                            userEntity.getMembershipdate()
+                    userEntity.getId(),
+                    userEntity.getName(),
+                    userEntity.getEmail(),
+                    userEntity.getPhone(),
+                    userEntity.getAddress(),
+                    userEntity.getMembershipdate()
                     )
             );
         }

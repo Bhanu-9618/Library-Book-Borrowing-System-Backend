@@ -15,6 +15,6 @@ public class BorrowDto {
     private LocalDate dueDate;
     private LocalDate returnDate;
     private String status;
-    private Long id;
-    private String userid;
+    private Long bookid;
+    private Long userid;
 }

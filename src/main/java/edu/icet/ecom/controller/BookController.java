@@ -4,11 +4,11 @@ import edu.icet.ecom.model.dto.BookDto;
 import edu.icet.ecom.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/book")
+@CrossOrigin(origins = "*")
 public class BookController {
 
     @Autowired

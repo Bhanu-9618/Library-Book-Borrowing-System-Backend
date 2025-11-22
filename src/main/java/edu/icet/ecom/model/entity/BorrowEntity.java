@@ -30,7 +30,7 @@ public class BorrowEntity {
     @JoinColumn(name = "UserId")
     private UserEntity userEntity;
 
-    public BorrowEntity( LocalDate borrowdate, LocalDate dueDate, LocalDate returnDate, String status, Long id, String userid) {
+    public BorrowEntity(LocalDate borrowdate, LocalDate dueDate, LocalDate returnDate, String status, Long id, Long userid) {
 
         this.borrowdate = LocalDate.now();
         this.dueDate = dueDate;
@@ -42,7 +42,7 @@ public class BorrowEntity {
         this.bookEntity = book;
 
         UserEntity user = new UserEntity();
-        user.setUserid(userid);
+        user.setId(userid);
         this.userEntity = user;
     }
 }

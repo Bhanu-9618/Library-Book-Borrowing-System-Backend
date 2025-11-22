@@ -27,18 +27,18 @@ public class BorrowServiceImpl implements BorrowService {
     @Override
     public String saveDetails(BorrowDto borrowDto) {
 
-        if (!bookRepository.existsById(Long.valueOf(borrowDto.getId()))) {
+        if (!bookRepository.existsById(Long.valueOf(borrowDto.getBookid()))) {
             return "Book Not Found!";
         }
 
-        Optional<BookEntity> bookEntity = bookRepository.findById(borrowDto.getId());
+        Optional<BookEntity> bookEntity = bookRepository.findById(borrowDto.getBookid());
         BookEntity bookEntity1 = bookEntity.orElseThrow();
 
         if(bookEntity1.getAvailability().equals("unavailable")){
             return "Book already borrowed!";
         }
 
-        if (!userRepository.existsById(borrowDto.getUserid())) {
+        if (!userRepository.existsById(Long.valueOf(borrowDto.getUserid()))) {
             return "User Not Found!";
         }
 
@@ -48,9 +48,10 @@ public class BorrowServiceImpl implements BorrowService {
                 borrowDto.getDueDate(),
                 borrowDto.getReturnDate(),
                 borrowDto.getStatus(),
-                borrowDto.getId(),
+                borrowDto.getBookid(),
                 borrowDto.getUserid()
         );
+
         borrowRepository.save(borrowEntity);
         return "Borrow Successfull!";
     }

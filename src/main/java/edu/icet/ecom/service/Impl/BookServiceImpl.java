@@ -4,6 +4,7 @@ import edu.icet.ecom.model.dto.BookDto;
 import edu.icet.ecom.model.entity.BookEntity;
 import edu.icet.ecom.repository.BookRepository;
 import edu.icet.ecom.service.BookService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -13,21 +14,13 @@ import java.util.Optional;
 @Service
 public class BookServiceImpl implements BookService {
 
+    ModelMapper mapper = new ModelMapper();
+
     @Autowired
     BookRepository bookRepository;
 
     public void add(BookDto bookDto){
-        BookEntity bookEntity = new BookEntity(
-                bookDto.getId(),
-                bookDto.getTitle(),
-                bookDto.getAuthor(),
-                bookDto.getPublisher(),
-                bookDto.getIsbn(),
-                bookDto.getCategory(),
-                bookDto.getAvailableCopies(),
-                bookDto.getAvailability().toLowerCase()
-        );
-        bookRepository.save(bookEntity);
+        bookRepository.save(mapper.map(bookDto,BookEntity.class));
     }
 
     public List<BookDto> getAllDetails(){
@@ -51,17 +44,7 @@ public class BookServiceImpl implements BookService {
     }
 
     public void update(BookDto bookDto) {
-        BookEntity bookEntity = new BookEntity(
-                bookDto.getId(),
-                bookDto.getTitle(),
-                bookDto.getAuthor(),
-                bookDto.getPublisher(),
-                bookDto.getIsbn(),
-                bookDto.getCategory(),
-                bookDto.getAvailableCopies(),
-                bookDto.getAvailability()
-        );
-        bookRepository.save(bookEntity);
+        bookRepository.save(mapper.map(bookDto,BookEntity.class));
     }
 
     public void delete(String id) {
@@ -70,17 +53,7 @@ public class BookServiceImpl implements BookService {
 
     public BookDto searchById(String bookId){
         Optional<BookEntity> byId = bookRepository.findById(Long.valueOf(bookId));
-
         BookEntity bookEntity = byId.orElseThrow();
-        return new BookDto(
-                bookEntity.getId(),
-                bookEntity.getAuthor(),
-                bookEntity.getTitle(),
-                bookEntity.getPublisher(),
-                bookEntity.getIsbn(),
-                bookEntity.getPublisher(),
-                bookEntity.getAvailableCopies(),
-                bookEntity.getAvailability()
-        );
+        return (mapper.map(bookEntity , BookDto.class));
     }
 }

@@ -4,28 +4,22 @@ import edu.icet.ecom.model.dto.UserDto;
 import edu.icet.ecom.model.entity.UserEntity;
 import edu.icet.ecom.repository.UserRepository;
 import edu.icet.ecom.service.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
 
+    ModelMapper mapper = new ModelMapper();
+
     @Autowired
     UserRepository userRepository;
 
     public void save(UserDto user){
-        UserEntity userEntity = new UserEntity(
-                user.getName(),
-                user.getEmail(),
-                user.getPhone(),
-                user.getAddress(),
-                user.getMembershipdate()
-        );
-        userRepository.save(userEntity);
+        userRepository.save(mapper.map(user , UserEntity.class));
     }
 
     public List<UserDto> getAllDetails() {

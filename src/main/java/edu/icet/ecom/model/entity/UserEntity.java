@@ -25,11 +25,4 @@ public class UserEntity {
     private String address;
     private LocalDate membershipdate;
 
-    public UserEntity(String name, String email, String phone, String address, LocalDate membershipdate) {
-        this.name = name;
-        this.email = email;
-        this.phone = phone;
-        this.address = address;
-        this.membershipdate = membershipdate;
-    }
 }

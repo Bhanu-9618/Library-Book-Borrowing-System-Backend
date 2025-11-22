@@ -7,6 +7,7 @@ import edu.icet.ecom.repository.BookRepository;
 import edu.icet.ecom.repository.BorrowRepository;
 import edu.icet.ecom.repository.UserRepository;
 import edu.icet.ecom.service.BorrowService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +52,6 @@ public class BorrowServiceImpl implements BorrowService {
                 borrowDto.getBookid(),
                 borrowDto.getUserid()
         );
-
         borrowRepository.save(borrowEntity);
         return "Borrow Successfull!";
     }

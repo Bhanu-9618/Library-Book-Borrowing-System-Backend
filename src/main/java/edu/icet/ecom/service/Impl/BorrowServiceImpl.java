@@ -7,6 +7,7 @@ import edu.icet.ecom.repository.BookRepository;
 import edu.icet.ecom.repository.BorrowRepository;
 import edu.icet.ecom.repository.UserRepository;
 import edu.icet.ecom.service.BorrowService;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,10 +28,9 @@ public class BorrowServiceImpl implements BorrowService {
     UserRepository userRepository;
 
     @Override
+    @Transactional
     public String saveDetails(BorrowDto borrowDto) {
 
-        System.out.println(borrowDto.getBookid());
-        System.out.println(borrowDto.getUserid());
         if (!bookRepository.existsById(borrowDto.getBookid())) {
             return "Book Not Found!";
         }
@@ -38,14 +38,19 @@ public class BorrowServiceImpl implements BorrowService {
         Optional<BookEntity> bookEntity = bookRepository.findById(borrowDto.getBookid());
         BookEntity bookEntity1 = bookEntity.orElseThrow();
 
-        if(bookEntity1.getAvailability().equals("unavailable")){
-            return "Book already borrowed!";
+        if (bookEntity1.getAvailableCopies() == 0) {
+            bookEntity1.setAvailability("unavailable");
+            bookRepository.save(bookEntity1);
+        }
+
+        if(bookEntity1.getAvailableCopies() == 0){
+            return "All the books borrowed!";
         }
 
         if (!userRepository.existsById(borrowDto.getUserid())) {
             return "User Not Found!";
         }
-        bookEntity1.setAvailability("unavailable");
+        bookEntity1.setAvailableCopies(bookEntity1.getAvailableCopies() - 1);
 
         BorrowEntity entity = mapper.map(borrowDto, BorrowEntity.class);
 

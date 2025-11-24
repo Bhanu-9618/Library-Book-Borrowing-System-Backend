@@ -20,7 +20,7 @@ public class BookController {
     }
 
     @GetMapping("/all")
-    public List<BookDto> getDetails(){
+    public List<BookDto> getDetails() throws Exception {
         List<BookDto> bookDtoList = bookService.getAllDetails();
         return bookDtoList;
     }

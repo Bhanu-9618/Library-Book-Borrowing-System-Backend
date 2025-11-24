@@ -1,5 +1,7 @@
 package edu.icet.ecom.model.dto;
 
+import edu.icet.ecom.model.entity.BookEntity;
+import edu.icet.ecom.model.entity.UserEntity;
 import lombok.*;
 
 import java.time.LocalDate;

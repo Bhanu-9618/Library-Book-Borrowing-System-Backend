@@ -30,20 +30,5 @@ public class BorrowEntity {
     @JoinColumn(name = "UserId")
     private UserEntity userEntity;
 
-    public BorrowEntity(LocalDate borrowdate, LocalDate dueDate, LocalDate returnDate, String status, Long id, Long userid) {
-
-        this.borrowdate = LocalDate.now();
-        this.dueDate = dueDate;
-        this.returnDate = returnDate;
-        this.status = status;
-
-        BookEntity book = new BookEntity();
-        book.setId(id);
-        this.bookEntity = book;
-
-        UserEntity user = new UserEntity();
-        user.setId(userid);
-        this.userEntity = user;
-    }
 }
 

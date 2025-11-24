@@ -10,7 +10,6 @@ import edu.icet.ecom.service.BorrowService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 
 @Service
@@ -30,7 +29,9 @@ public class BorrowServiceImpl implements BorrowService {
     @Override
     public String saveDetails(BorrowDto borrowDto) {
 
-        if (!bookRepository.existsById(Long.valueOf(borrowDto.getBookid()))) {
+        System.out.println(borrowDto.getBookid());
+        System.out.println(borrowDto.getUserid());
+        if (!bookRepository.existsById(borrowDto.getBookid())) {
             return "Book Not Found!";
         }
 
@@ -41,13 +42,17 @@ public class BorrowServiceImpl implements BorrowService {
             return "Book already borrowed!";
         }
 
-        if (!userRepository.existsById(Long.valueOf(borrowDto.getUserid()))) {
+        if (!userRepository.existsById(borrowDto.getUserid())) {
             return "User Not Found!";
         }
-
         bookEntity1.setAvailability("unavailable");
 
-        borrowRepository.save(mapper.map(borrowDto , BorrowEntity.class));
+        BorrowEntity entity = mapper.map(borrowDto, BorrowEntity.class);
+
+        entity.setBookEntity(bookRepository.getReferenceById(borrowDto.getBookid()));
+        entity.setUserEntity(userRepository.getReferenceById(String.valueOf(borrowDto.getUserid())));
+
+        borrowRepository.save(entity);
         return "Borrow Successfull!";
     }
 }

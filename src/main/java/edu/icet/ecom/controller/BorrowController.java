@@ -15,6 +15,6 @@ public class BorrowController {
 
     @PostMapping("/save")
     public String save(@RequestBody BorrowDto borrowDto){
-        return   borrowService.saveDetails(borrowDto);
+        return borrowService.saveDetails(borrowDto);
     }
 }

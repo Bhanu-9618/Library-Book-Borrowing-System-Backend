@@ -15,9 +15,8 @@ public class BookController {
     BookService bookService;
 
     @PostMapping("/save")
-    public void getAllBookDetails(@RequestBody BookDto bookDto){
+    public void saveBook(@RequestBody BookDto bookDto){
         bookService.add(bookDto);
-        System.out.println(bookDto);
     }
 
     @GetMapping("/all")

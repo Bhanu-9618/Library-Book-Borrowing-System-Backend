@@ -28,15 +28,7 @@ public class UserServiceImpl implements UserService {
         List<UserDto> users = new ArrayList<>();
 
         for (UserEntity userEntity : userEntities){
-            users.add( new UserDto(
-                    userEntity.getId(),
-                    userEntity.getName(),
-                    userEntity.getEmail(),
-                    userEntity.getPhone(),
-                    userEntity.getAddress(),
-                    userEntity.getMembershipdate()
-                    )
-            );
+            users.add(mapper.map(userEntity ,UserDto.class));
         }
         return users;
     }

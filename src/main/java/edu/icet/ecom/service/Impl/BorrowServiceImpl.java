@@ -16,6 +16,8 @@ import java.util.Optional;
 @Service
 public class BorrowServiceImpl implements BorrowService {
 
+    ModelMapper mapper = new ModelMapper();
+
     @Autowired
     BorrowRepository borrowRepository;
 
@@ -44,15 +46,8 @@ public class BorrowServiceImpl implements BorrowService {
         }
 
         bookEntity1.setAvailability("unavailable");
-        BorrowEntity borrowEntity = new BorrowEntity(
-                borrowDto.getBorrowdate(),
-                borrowDto.getDueDate(),
-                borrowDto.getReturnDate(),
-                borrowDto.getStatus(),
-                borrowDto.getBookid(),
-                borrowDto.getUserid()
-        );
-        borrowRepository.save(borrowEntity);
+
+        borrowRepository.save(mapper.map(borrowDto , BorrowEntity.class));
         return "Borrow Successfull!";
     }
 }

@@ -28,17 +28,7 @@ public class BookServiceImpl implements BookService {
         List<BookDto> bookDtos = new ArrayList<>();
 
         for (BookEntity bookEntity : bookList){
-            bookDtos.add( new BookDto(
-                            bookEntity.getId(),
-                            bookEntity.getTitle(),
-                            bookEntity.getAuthor(),
-                            bookEntity.getPublisher(),
-                            bookEntity.getIsbn(),
-                            bookEntity.getCategory(),
-                            bookEntity.getAvailableCopies(),
-                            bookEntity.getAvailability()
-                    )
-            );
+            bookDtos.add(mapper.map(bookEntity, BookDto.class));
         }
         return bookDtos;
     }

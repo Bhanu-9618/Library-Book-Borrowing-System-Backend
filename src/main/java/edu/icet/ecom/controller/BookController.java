@@ -20,8 +20,13 @@ public class BookController {
     }
 
     @GetMapping("/all")
-    public List<BookDto> getDetails() throws Exception {
-        List<BookDto> bookDtoList = bookService.getAllDetails();
+    public List<BookDto> getDetails() {
+        List<BookDto> bookDtoList = null;
+        try {
+            bookDtoList = bookService.getAllDetails();
+        } catch (Exception e) {
+            throw new RuntimeException("Can't load table!");
+        }
         return bookDtoList;
     }
 

@@ -23,7 +23,7 @@ public class BookServiceImpl implements BookService {
         bookRepository.save(mapper.map(bookDto,BookEntity.class));
     }
 
-    public List<BookDto> getAllDetails() throws Exception{
+    public List<BookDto> getAllDetails(){
         List<BookEntity> bookList =  bookRepository.findAll();
         List<BookDto> bookDtos = new ArrayList<>();
 

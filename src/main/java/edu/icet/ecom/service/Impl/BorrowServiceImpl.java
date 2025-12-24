@@ -11,6 +11,8 @@ import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,7 +32,6 @@ public class BorrowServiceImpl implements BorrowService {
     @Override
     @Transactional
     public String saveDetails(BorrowDto borrowDto) {
-
         if (!bookRepository.existsById(borrowDto.getBookid())) {
             return "Book Not Found!";
         }
@@ -38,26 +39,50 @@ public class BorrowServiceImpl implements BorrowService {
         Optional<BookEntity> bookEntity = bookRepository.findById(borrowDto.getBookid());
         BookEntity bookEntity1 = bookEntity.orElseThrow();
 
-        if (bookEntity1.getAvailableCopies() == 0) {
+        if(bookEntity1.getAvailableCopies() <= 0){
             bookEntity1.setAvailability("unavailable");
             bookRepository.save(bookEntity1);
-        }
-
-        if(bookEntity1.getAvailableCopies() == 0){
             return "All the books borrowed!";
         }
 
         if (!userRepository.existsById(borrowDto.getUserid())) {
             return "User Not Found!";
         }
+
         bookEntity1.setAvailableCopies(bookEntity1.getAvailableCopies() - 1);
+        bookRepository.save(bookEntity1);
 
         BorrowEntity entity = mapper.map(borrowDto, BorrowEntity.class);
-
         entity.setBookEntity(bookRepository.getReferenceById(borrowDto.getBookid()));
         entity.setUserEntity(userRepository.getReferenceById(String.valueOf(borrowDto.getUserid())));
 
         borrowRepository.save(entity);
-        return "Borrow Successfull!";
+        return "Borrow Successful!";
+    }
+
+    @Override
+    @Transactional
+    public String updateDetails(BorrowDto borrowDto) {
+
+        BorrowEntity entity = mapper.map(borrowDto, BorrowEntity.class);
+        entity.setBookEntity(bookRepository.getReferenceById(borrowDto.getBookid()));
+        entity.setUserEntity(userRepository.getReferenceById(String.valueOf(borrowDto.getUserid())));
+
+        borrowRepository.save(entity);
+        return "Updated Successful!";
+    }
+
+    @Override
+    public List<BorrowDto> getAllHistory() {
+        List<BorrowEntity> entities = borrowRepository.findAll();
+        List<BorrowDto> historyList = new ArrayList<>();
+
+        for (BorrowEntity entity : entities) {
+            BorrowDto dto = mapper.map(entity, BorrowDto.class);
+            dto.setBookid(entity.getBookEntity().getId());
+            dto.setUserid(entity.getUserEntity().getId());
+            historyList.add(dto);
+        }
+        return historyList;
     }
 }

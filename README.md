@@ -8,7 +8,8 @@ The Library Book Borrowing System is a fully functional backend application desi
 
 ## Tech Stack
 
-- **Backend Framework:** Spring Boot  
+- **Backend Framework:** Spring Boot
+- **Frontend Framework/Library:** React.js | Bootstrap
 - **Database:** MySQL  
 - **ORM:** Spring Data JPA / Hibernate  
 - **API Testing:** Postman  

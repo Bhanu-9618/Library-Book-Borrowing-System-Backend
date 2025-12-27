@@ -64,9 +64,13 @@ public class BorrowServiceImpl implements BorrowService {
     @Transactional
     public String updateDetails(BorrowDto borrowDto) {
 
+        Optional<BookEntity> bookEntity = bookRepository.findById(borrowDto.getBookid());
+        BookEntity bookEntity1 = bookEntity.orElseThrow();
+
         BorrowEntity entity = mapper.map(borrowDto, BorrowEntity.class);
         entity.setBookEntity(bookRepository.getReferenceById(borrowDto.getBookid()));
         entity.setUserEntity(userRepository.getReferenceById(String.valueOf(borrowDto.getUserid())));
+        bookEntity1.setAvailableCopies(bookEntity1.getAvailableCopies() + 1);
 
         borrowRepository.save(entity);
         return "Updated Successful!";

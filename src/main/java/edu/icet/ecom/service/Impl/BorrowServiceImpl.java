@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BorrowServiceImpl implements BorrowService {
@@ -88,5 +89,24 @@ public class BorrowServiceImpl implements BorrowService {
             historyList.add(dto);
         }
         return historyList;
+    }
+
+    @Override
+    public List<BorrowDto> getHistoryByUserId(Long userid) {
+        List<BorrowEntity> entities = borrowRepository.findByUserEntity_Id(userid);
+
+        return entities.stream().map(entity -> {
+            BorrowDto dto = mapper.map(entity, BorrowDto.class);
+
+            // Entity එක ඇතුළේ තියෙන IDs ටික අරගෙන DTO එකට manually සෙට් කිරීම
+            if (entity.getUserEntity() != null) {
+                dto.setUserid(entity.getUserEntity().getId());
+            }
+            if (entity.getBookEntity() != null) {
+                dto.setBookid(entity.getBookEntity().getId());
+            }
+
+            return dto;
+        }).collect(Collectors.toList());
     }
 }

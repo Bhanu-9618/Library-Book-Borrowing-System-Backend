@@ -28,4 +28,9 @@ public class BorrowController {
     public List<BorrowDto> getAllHistory() {
         return borrowService.getAllHistory();
     }
+
+    @GetMapping("/search/{userid}")
+    public List<BorrowDto> getHistoryByUserId(@PathVariable Long userid) {
+        return borrowService.getHistoryByUserId(userid);
+    }
 }

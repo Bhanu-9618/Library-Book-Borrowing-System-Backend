@@ -19,10 +19,12 @@ public class BookServiceImpl implements BookService {
     @Autowired
     BookRepository bookRepository;
 
+    @Override
     public void add(BookDto bookDto){
         bookRepository.save(mapper.map(bookDto,BookEntity.class));
     }
 
+    @Override
     public List<BookDto> getAllDetails(){
         List<BookEntity> bookList =  bookRepository.findAll();
         List<BookDto> bookDtos = new ArrayList<>();
@@ -33,14 +35,17 @@ public class BookServiceImpl implements BookService {
         return bookDtos;
     }
 
+    @Override
     public void update(BookDto bookDto) {
         bookRepository.save(mapper.map(bookDto,BookEntity.class));
     }
 
+    @Override
     public void delete(String id) {
         bookRepository.deleteById(Long.valueOf(id));
     }
 
+    @Override
     public BookDto searchById(String bookId){
         Optional<BookEntity> byId = bookRepository.findById(Long.valueOf(bookId));
         BookEntity bookEntity = byId.orElseThrow();

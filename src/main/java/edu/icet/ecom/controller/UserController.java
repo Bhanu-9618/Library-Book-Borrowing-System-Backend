@@ -25,4 +25,19 @@ public class UserController {
     public List<UserDto> getDetails(){
         return userService.getAllDetails();
     }
+
+    @PutMapping("/update")
+    public void update(@RequestBody UserDto user){
+        userService.updateUser(user);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public void delete(@PathVariable Long id){
+        userService.deleteUser(id);
+    }
+
+    @GetMapping("/search/{term}")
+    public List<UserDto> search(@PathVariable String term) {
+        return userService.searchUsers(term);
+    }
 }

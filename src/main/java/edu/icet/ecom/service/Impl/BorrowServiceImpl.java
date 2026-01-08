@@ -98,7 +98,6 @@ public class BorrowServiceImpl implements BorrowService {
         return entities.stream().map(entity -> {
             BorrowDto dto = mapper.map(entity, BorrowDto.class);
 
-            // Entity එක ඇතුළේ තියෙන IDs ටික අරගෙන DTO එකට manually සෙට් කිරීම
             if (entity.getUserEntity() != null) {
                 dto.setUserid(entity.getUserEntity().getId());
             }

@@ -20,7 +20,6 @@ public class LoginServiceImpl implements LoginService {
                 loginDto.getPassword()
         ).isPresent();
     }
-
     @PostConstruct
     public void initAdmin() {
         if (adminRepository.count() == 0) {

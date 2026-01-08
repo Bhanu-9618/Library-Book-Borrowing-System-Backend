@@ -27,7 +27,6 @@ public class UserServiceImpl implements UserService {
             userRepository.save(mapper.map(user, UserEntity.class));
         }
     }
-
     @Override
     public List<UserDto> getAllDetails() {
         List<UserEntity> userEntities = userRepository.findAll();
@@ -38,7 +37,6 @@ public class UserServiceImpl implements UserService {
         }
         return users;
     }
-
     @Transactional
     @Override
     public void updateUser(UserDto user) {
@@ -59,7 +57,6 @@ public class UserServiceImpl implements UserService {
             }
         }
     }
-
     @Transactional
     @Override
     public void deleteUser(Long id) {

@@ -55,7 +55,7 @@ public class BorrowServiceImpl implements BorrowService {
 
         BorrowEntity entity = mapper.map(borrowDto, BorrowEntity.class);
         entity.setBookEntity(bookRepository.getReferenceById(borrowDto.getBookid()));
-        entity.setUserEntity(userRepository.getReferenceById(String.valueOf(borrowDto.getUserid())));
+        entity.setUserEntity(userRepository.getReferenceById(borrowDto.getUserid()));
 
         borrowRepository.save(entity);
         return "Borrow Successful!";
@@ -70,7 +70,7 @@ public class BorrowServiceImpl implements BorrowService {
 
         BorrowEntity entity = mapper.map(borrowDto, BorrowEntity.class);
         entity.setBookEntity(bookRepository.getReferenceById(borrowDto.getBookid()));
-        entity.setUserEntity(userRepository.getReferenceById(String.valueOf(borrowDto.getUserid())));
+        entity.setUserEntity(userRepository.getReferenceById(borrowDto.getUserid()));
         bookEntity1.setAvailableCopies(bookEntity1.getAvailableCopies() + 1);
 
         borrowRepository.save(entity);

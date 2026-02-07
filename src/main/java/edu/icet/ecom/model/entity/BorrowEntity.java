@@ -21,7 +21,7 @@ public class BorrowEntity {
     private LocalDate borrowdate;
     @Column(nullable = false)
     private LocalDate dueDate;
-    @Column(nullable = false)
+
     private LocalDate returnDate;
     @Column(nullable = false)
     private String status;

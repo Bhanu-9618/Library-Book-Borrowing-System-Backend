@@ -3,30 +3,29 @@ package edu.icet.ecom.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
 @Entity
-public class BookEntity {
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String title;
+    private String name;
     @Column(nullable = false)
-    private String author;
+    private String email;
     @Column(nullable = false)
-    private String publisher;
+    private String phone;
     @Column(nullable = false)
-    private String isbn;
+    private String address;
     @Column(nullable = false)
-    private String category;
-    @Column(nullable = false)
-    private int availableCopies;
-    @Column(nullable = false)
-    private String availability;
+    private LocalDate membershipdate;
+
 }

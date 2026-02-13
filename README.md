@@ -1,4 +1,4 @@
-# 📚 LibManager - Backend
+# 📚 LibManager - Backend (Staff Portal)
 
 LibManager Backend is a robust RESTful API built with **Spring Boot** and **MySQL**. It handles the core business logic for book inventory, user memberships, and the circulation desk (borrowing/returning logic).
 

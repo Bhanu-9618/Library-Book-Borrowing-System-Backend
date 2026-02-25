@@ -11,7 +11,7 @@ import java.util.Date;
 public class JwtUtils {
 
     private final String jwtSecret = "MY_SECRET_KEY";
-    private final int jwtExpirationMs = 86400000;
+    private final int jwtExpirationMs = 86400;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));

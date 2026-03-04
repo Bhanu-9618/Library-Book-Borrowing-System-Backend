@@ -18,4 +18,6 @@ public interface UserRepository extends JpaRepository<UserEntity,Long> {
 
     @Query("SELECT u FROM UserEntity u WHERE STR(u.id) LIKE %:term% OR LOWER(u.name) LIKE LOWER(CONCAT('%', :term, '%'))")
     List<UserEntity> searchByTerm(@Param("term") String term);
+
+    Optional<UserEntity> findByUsername(String username);
 }

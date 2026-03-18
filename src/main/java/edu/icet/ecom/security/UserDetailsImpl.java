@@ -13,13 +13,13 @@ import java.util.List;
 public class UserDetailsImpl implements UserDetails {
 
     private Long id;
-    private String username;
+    private String email;
     private String password;
 
     public static UserDetailsImpl build(UserEntity user) {
         return new UserDetailsImpl(
                 user.getId(),
-                user.getUsername(),
+                user.getEmail(),
                 user.getPassword()
         );
     }
@@ -27,6 +27,11 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
     }
 
     @Override

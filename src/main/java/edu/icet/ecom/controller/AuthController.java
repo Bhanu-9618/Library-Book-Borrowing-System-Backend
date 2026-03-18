@@ -34,12 +34,12 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        String jwt = jwtUtils.generateToken(userDetails.getUsername());
+        String jwt = jwtUtils.generateToken(userDetails.getEmail());
 
         Map<String, Object> response = new HashMap<>();
         response.put("token", jwt);
         response.put("id", userDetails.getId());
-        response.put("username", userDetails.getUsername());
+        response.put("email", userDetails.getEmail());
 
         return ResponseEntity.ok(response);
     }

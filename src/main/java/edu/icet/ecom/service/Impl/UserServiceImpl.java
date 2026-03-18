@@ -7,7 +7,9 @@ import edu.icet.ecom.service.UserService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,12 +23,18 @@ public class UserServiceImpl implements UserService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     @Override
     public void save(UserDto user) {
         if (!userRepository.existsByEmail(user.getEmail())) {
-            userRepository.save(mapper.map(user, UserEntity.class));
+            UserEntity userEntity = mapper.map(user, UserEntity.class);
+            userEntity.setPassword(passwordEncoder.encode(user.getPassword()));
+            userRepository.save(userEntity);
         }
     }
+
     @Override
     public List<UserDto> getAllDetails() {
         List<UserEntity> userEntities = userRepository.findAll();
@@ -37,6 +45,7 @@ public class UserServiceImpl implements UserService {
         }
         return users;
     }
+
     @Transactional
     @Override
     public void updateUser(UserDto user) {
@@ -57,6 +66,7 @@ public class UserServiceImpl implements UserService {
             }
         }
     }
+
     @Transactional
     @Override
     public void deleteUser(Long id) {

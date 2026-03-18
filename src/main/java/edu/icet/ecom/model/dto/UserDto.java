@@ -17,4 +17,5 @@ public class UserDto {
     private String phone;
     private String address;
     private LocalDate membershipdate;
+    private String password;
 }

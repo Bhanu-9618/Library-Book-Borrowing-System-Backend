@@ -18,4 +18,5 @@ public class UserDto {
     private String address;
     private LocalDate membershipdate;
     private String password;
+    private String role;
 }

@@ -4,6 +4,7 @@ import edu.icet.ecom.model.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
@@ -15,18 +16,20 @@ public class UserDetailsImpl implements UserDetails {
     private Long id;
     private String email;
     private String password;
+    private String role;
 
     public static UserDetailsImpl build(UserEntity user) {
         return new UserDetailsImpl(
                 user.getId(),
                 user.getEmail(),
-                user.getPassword()
+                user.getPassword(),
+                user.getRole()
         );
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
     }
 
     @Override

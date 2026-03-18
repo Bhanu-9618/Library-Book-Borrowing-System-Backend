@@ -4,12 +4,14 @@ import edu.icet.ecom.model.dto.UserDto;
 import edu.icet.ecom.model.entity.UserEntity;
 import edu.icet.ecom.repository.UserRepository;
 import edu.icet.ecom.service.UserService;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,11 +28,27 @@ public class UserServiceImpl implements UserService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @PostConstruct
+    public void initAdmin() {
+        if (!userRepository.existsByEmail("admin@gmail.com")) {
+            UserEntity admin = new UserEntity();
+            admin.setEmail("admin@gmail.com");
+            admin.setPassword(passwordEncoder.encode("admin123"));
+            admin.setName("Admin");
+            admin.setPhone("0000000000");
+            admin.setAddress("System");
+            admin.setMembershipdate(LocalDate.now());
+            admin.setRole("ADMIN");
+            userRepository.save(admin);
+        }
+    }
+
     @Override
     public void save(UserDto user) {
         if (!userRepository.existsByEmail(user.getEmail())) {
             UserEntity userEntity = mapper.map(user, UserEntity.class);
             userEntity.setPassword(passwordEncoder.encode(user.getPassword()));
+            userEntity.setRole("USER");
             userRepository.save(userEntity);
         }
     }

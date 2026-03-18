@@ -40,6 +40,7 @@ public class AuthController {
         response.put("token", jwt);
         response.put("id", userDetails.getId());
         response.put("email", userDetails.getEmail());
+        response.put("role", userDetails.getRole());
 
         return ResponseEntity.ok(response);
     }

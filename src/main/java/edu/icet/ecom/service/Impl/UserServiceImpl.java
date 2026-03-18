@@ -20,7 +20,8 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
 
-    ModelMapper mapper = new ModelMapper();
+    @Autowired
+    ModelMapper mapper;
 
     @Autowired
     UserRepository userRepository;

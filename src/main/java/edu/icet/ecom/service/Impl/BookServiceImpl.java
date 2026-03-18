@@ -14,7 +14,8 @@ import java.util.Optional;
 @Service
 public class BookServiceImpl implements BookService {
 
-    ModelMapper mapper = new ModelMapper();
+    @Autowired
+    ModelMapper mapper;
 
     @Autowired
     BookRepository bookRepository;

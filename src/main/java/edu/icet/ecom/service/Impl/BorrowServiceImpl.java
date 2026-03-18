@@ -19,7 +19,8 @@ import java.util.stream.Collectors;
 @Service
 public class BorrowServiceImpl implements BorrowService {
 
-    ModelMapper mapper = new ModelMapper();
+    @Autowired
+    ModelMapper mapper;
 
     @Autowired
     BorrowRepository borrowRepository;

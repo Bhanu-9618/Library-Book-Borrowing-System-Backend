@@ -42,13 +42,13 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void delete(String id) {
-        bookRepository.deleteById(Long.valueOf(id));
+    public void delete(Long id) {
+        bookRepository.deleteById(id);
     }
 
     @Override
-    public BookDto searchById(String bookId){
-        Optional<BookEntity> byId = bookRepository.findById(Long.valueOf(bookId));
+    public BookDto searchById(Long bookId){
+        Optional<BookEntity> byId = bookRepository.findById(bookId);
         BookEntity bookEntity = byId.orElseThrow();
         return (mapper.map(bookEntity , BookDto.class));
     }

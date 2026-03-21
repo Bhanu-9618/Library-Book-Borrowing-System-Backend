@@ -52,6 +52,9 @@ public class BorrowServiceImpl implements BorrowService {
         }
 
         bookEntity1.setAvailableCopies(bookEntity1.getAvailableCopies() - 1);
+        if (bookEntity1.getAvailableCopies() <= 0) {
+            bookEntity1.setAvailability("unavailable");
+        }
         bookRepository.save(bookEntity1);
 
         BorrowEntity entity = mapper.map(borrowDto, BorrowEntity.class);
@@ -72,7 +75,17 @@ public class BorrowServiceImpl implements BorrowService {
         BorrowEntity entity = mapper.map(borrowDto, BorrowEntity.class);
         entity.setBookEntity(bookRepository.getReferenceById(borrowDto.getBookid()));
         entity.setUserEntity(userRepository.getReferenceById(borrowDto.getUserid()));
-        bookEntity1.setAvailableCopies(bookEntity1.getAvailableCopies() + 1);
+        
+        if (borrowDto.getBorrowid() != null) {
+            Optional<BorrowEntity> existingBorrow = borrowRepository.findById(borrowDto.getBorrowid());
+            if (existingBorrow.isPresent() && 
+                !"Returned".equalsIgnoreCase(existingBorrow.get().getStatus()) && 
+                "Returned".equalsIgnoreCase(borrowDto.getStatus())) {
+                bookEntity1.setAvailableCopies(bookEntity1.getAvailableCopies() + 1);
+                bookEntity1.setAvailability("available");
+                bookRepository.save(bookEntity1);
+            }
+        }
 
         borrowRepository.save(entity);
         return "Updated Successful!";

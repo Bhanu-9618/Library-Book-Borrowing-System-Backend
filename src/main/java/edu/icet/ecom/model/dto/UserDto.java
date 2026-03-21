@@ -2,6 +2,7 @@ package edu.icet.ecom.model.dto;
 
 import lombok.*;
 
+import edu.icet.ecom.model.enums.Role;
 import java.time.LocalDate;
 
 @Setter
@@ -18,5 +19,5 @@ public class UserDto {
     private String address;
     private LocalDate membershipdate;
     private String password;
-    private String role;
+    private Role role;
 }

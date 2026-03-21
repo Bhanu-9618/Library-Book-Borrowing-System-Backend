@@ -3,6 +3,7 @@ package edu.icet.ecom.controller;
 import edu.icet.ecom.model.dto.BookDto;
 import edu.icet.ecom.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -15,33 +16,32 @@ public class BookController {
     BookService bookService;
 
     @PostMapping("/save")
+    @PreAuthorize("hasRole('ADMIN')") // Admin Only
     public void saveBook(@RequestBody BookDto bookDto){
         bookService.add(bookDto);
     }
 
     @GetMapping("/all")
-    public List<BookDto> getDetails() {
-        List<BookDto> bookDtoList = null;
-        try {
-            bookDtoList = bookService.getAllDetails();
-        } catch (Exception e) {
-            throw new RuntimeException("Can't load table!");
-        }
-        return bookDtoList;
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Both can view
+    public List<BookDto> getDetails() throws Exception {
+        return bookService.getAllDetails();
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasRole('ADMIN')") // Admin Only
     public void update(@RequestBody BookDto bookDto){
         bookService.update(bookDto);
     }
 
-    @DeleteMapping("delete/{id}")
-    public void delete(@PathVariable String id){
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')") // Admin Only
+    public void delete(@PathVariable Long id){
         bookService.delete(id);
     }
 
-    @GetMapping("id/{bookId}")
-    public BookDto searchById(@PathVariable String bookId){
+    @GetMapping("/id/{bookId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Both can search
+    public BookDto searchById(@PathVariable Long bookId){
         return bookService.searchById(bookId);
     }
 }

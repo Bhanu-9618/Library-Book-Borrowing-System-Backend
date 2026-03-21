@@ -10,8 +10,8 @@ import java.util.Date;
 @Component
 public class JwtUtils {
 
-    private final String jwtSecret = "MY_SECRET_KEY";
-    private final int jwtExpirationMs = 86400;
+    private final String jwtSecret = "MY_SUPER_SECRET_KEY_FOR_LIBRARY_SYSTEM_2026";
+    private final int jwtExpirationMs = 86400000;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));

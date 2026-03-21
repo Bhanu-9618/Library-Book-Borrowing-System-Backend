@@ -8,6 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
+import edu.icet.ecom.model.enums.Role;
 
 @AllArgsConstructor
 @Getter
@@ -16,7 +17,7 @@ public class UserDetailsImpl implements UserDetails {
     private Long id;
     private String email;
     private String password;
-    private String role;
+    private Role role;
 
     public static UserDetailsImpl build(UserEntity user) {
         return new UserDetailsImpl(
@@ -29,7 +30,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override

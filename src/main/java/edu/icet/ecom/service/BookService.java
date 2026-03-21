@@ -9,6 +9,6 @@ public interface BookService {
     void add(BookDto bookDto);
     List<BookDto> getAllDetails() throws Exception;
     void update(BookDto bookDto);
-    void delete(String id);
-    BookDto searchById(String bookId);
+    void delete(Long id);
+    BookDto searchById(Long bookId);
 }

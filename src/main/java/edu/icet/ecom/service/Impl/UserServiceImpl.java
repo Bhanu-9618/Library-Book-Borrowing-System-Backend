@@ -10,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import edu.icet.ecom.model.enums.Role;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class UserServiceImpl implements UserService {
             admin.setPhone("0000000000");
             admin.setAddress("System");
             admin.setMembershipdate(LocalDate.now());
-            admin.setRole("ADMIN");
+            admin.setRole(Role.ADMIN);
             userRepository.save(admin);
         }
     }
@@ -49,7 +50,11 @@ public class UserServiceImpl implements UserService {
         if (!userRepository.existsByEmail(user.getEmail())) {
             UserEntity userEntity = mapper.map(user, UserEntity.class);
             userEntity.setPassword(passwordEncoder.encode(user.getPassword()));
-            userEntity.setRole("USER");
+            if (user.getRole() == null) {
+                userEntity.setRole(Role.USER);
+            } else {
+                userEntity.setRole(user.getRole());
+            }
             userRepository.save(userEntity);
         }
     }

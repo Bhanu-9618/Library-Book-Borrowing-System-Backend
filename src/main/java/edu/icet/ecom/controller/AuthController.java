@@ -1,8 +1,10 @@
 package edu.icet.ecom.controller;
 
 import edu.icet.ecom.model.dto.LoginDto;
+import edu.icet.ecom.model.dto.UserDto;
 import edu.icet.ecom.security.JwtUtils;
 import edu.icet.ecom.security.UserDetailsImpl;
+import edu.icet.ecom.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,6 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import edu.icet.ecom.model.enums.Role;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,10 +23,20 @@ import java.util.Map;
 public class AuthController {
 
     @Autowired
-    AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
 
     @Autowired
-    JwtUtils jwtUtils;
+    private JwtUtils jwtUtils;
+
+    @Autowired
+    private UserService userService;
+
+    @PostMapping("/signup")
+    public String registerUser(@RequestBody UserDto userDto) {
+        userDto.setRole(Role.USER);
+        userService.save(userDto);
+        return "User registered successfully!";
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginDto loginDto) {

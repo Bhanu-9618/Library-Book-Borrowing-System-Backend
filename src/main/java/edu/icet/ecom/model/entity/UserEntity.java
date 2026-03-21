@@ -3,6 +3,7 @@ package edu.icet.ecom.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import edu.icet.ecom.model.enums.Role;
 import java.time.LocalDate;
 
 @Setter
@@ -35,7 +36,8 @@ public class UserEntity {
     @Column(nullable = false)
     private LocalDate membershipdate;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String role;
+    private Role role;
 
 }

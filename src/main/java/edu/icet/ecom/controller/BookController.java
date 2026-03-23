@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/book")
@@ -21,50 +22,69 @@ public class BookController {
 
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<StandardResponse> saveBook(@Valid @RequestBody BookDto bookDto){
+    public ResponseEntity<StandardResponse> save(@Valid @RequestBody BookDto bookDto) {
         bookService.add(bookDto);
         return new ResponseEntity<>(
-                new StandardResponse(201, "Book Saved Successfully", null),
+                new StandardResponse(201, "Book saved successfully", null),
                 HttpStatus.CREATED
-        );
-    }
-
-    @GetMapping("/all")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public ResponseEntity<StandardResponse> getDetails() throws Exception {
-        List<BookDto> allBooks = bookService.getAllDetails();
-        return new ResponseEntity<>(
-                new StandardResponse(200, "Success", allBooks),
-                HttpStatus.OK
         );
     }
 
     @PutMapping("/update")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<StandardResponse> update(@Valid @RequestBody BookDto bookDto){
+    public ResponseEntity<StandardResponse> update(@Valid @RequestBody BookDto bookDto) {
         bookService.update(bookDto);
         return new ResponseEntity<>(
-                new StandardResponse(200, "Book Updated Successfully", null),
+                new StandardResponse(200, "Book updated successfully", null),
                 HttpStatus.OK
         );
     }
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<StandardResponse> delete(@PathVariable Long id){
+    public ResponseEntity<StandardResponse> delete(@PathVariable Long id) {
         bookService.delete(id);
         return new ResponseEntity<>(
-                new StandardResponse(200, "Book Deleted Successfully", null),
+                new StandardResponse(200, "Book deleted successfully", null),
                 HttpStatus.OK
         );
     }
 
-    @GetMapping("/id/{bookId}")
+    @GetMapping("/id/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public ResponseEntity<StandardResponse> searchById(@PathVariable Long bookId){
-        BookDto bookDto = bookService.searchById(bookId);
+    public ResponseEntity<StandardResponse> searchById(@PathVariable Long id) {
+        BookDto bookDto = bookService.searchById(id);
         return new ResponseEntity<>(
                 new StandardResponse(200, "Success", bookDto),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/all")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public ResponseEntity<StandardResponse> getDetails(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Map<String, Object> paginatedData = bookService.getPaginatedBooks(page, size);
+
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Success", paginatedData),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public ResponseEntity<StandardResponse> searchBooks(
+            @RequestParam String term,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Map<String, Object> paginatedData = bookService.searchPaginatedBooks(term, page, size);
+
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Success", paginatedData),
                 HttpStatus.OK
         );
     }

@@ -4,8 +4,8 @@ import edu.icet.ecom.model.entity.BorrowEntity;
 import edu.icet.ecom.model.entity.FineEntity;
 import edu.icet.ecom.repository.BorrowRepository;
 import edu.icet.ecom.repository.FineRepository;
+import edu.icet.ecom.service.EmailService;
 import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-@Slf4j
 public class FineScheduler {
 
     @Autowired
@@ -25,11 +24,12 @@ public class FineScheduler {
     @Autowired
     private FineRepository fineRepository;
 
+    @Autowired
+    private EmailService emailService;
+
     @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     public void calculateLateFines() {
-        log.info("Starting nightly fine calculation scheduler...");
-
         LocalDate today = LocalDate.now();
         List<BorrowEntity> overdueBorrows = borrowRepository.findByStatusAndDueDateBefore("ISSUED", today);
 
@@ -52,7 +52,25 @@ public class FineScheduler {
                 fineRepository.save(newFine);
             }
         }
+    }
 
-        log.info("Completed nightly fine calculation for {} overdue records.", overdueBorrows.size());
+    @Scheduled(cron = "0 0 8 * * ?")
+    @Transactional
+    public void sendDueReminders() {
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        List<BorrowEntity> upcomingReturns = borrowRepository.findByStatusAndDueDate("ISSUED", tomorrow);
+
+        for (BorrowEntity borrow : upcomingReturns) {
+            String toEmail = borrow.getUserEntity().getEmail();
+            String subject = "Library Notice: Book Return Reminder";
+            String message = "Dear " + borrow.getUserEntity().getName() + ",\n\n" +
+                    "This is a gentle reminder that the book '" + borrow.getBookEntity().getTitle() +
+                    "' is due for return tomorrow (" + tomorrow + ").\n" +
+                    "Please ensure it is returned on time to avoid any late fines.\n\n" +
+                    "Thank you,\n" +
+                    "Enterprise Book Borrowing System";
+
+            emailService.sendSimpleMessage(toEmail, subject, message);
+        }
     }
 }

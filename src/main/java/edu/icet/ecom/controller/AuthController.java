@@ -4,6 +4,7 @@ import edu.icet.ecom.model.dto.LoginDto;
 import edu.icet.ecom.model.dto.UserDto;
 import edu.icet.ecom.security.JwtUtils;
 import edu.icet.ecom.security.UserDetailsImpl;
+import edu.icet.ecom.service.EmailService;
 import edu.icet.ecom.service.UserService;
 import edu.icet.ecom.util.StandardResponse;
 import jakarta.validation.Valid;
@@ -34,10 +35,23 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private EmailService emailService;
+
     @PostMapping("/signup")
     public ResponseEntity<StandardResponse> registerUser(@Valid @RequestBody UserDto userDto) {
         userDto.setRole(Role.USER);
         userService.save(userDto);
+
+        String subject = "Welcome to Enterprise Book Borrowing System";
+        String message = "Hello " + userDto.getName() + ",\n\n" +
+                "Your account has been successfully created. Welcome to the Enterprise Book Borrowing System!\n" +
+                "You can now log in and start borrowing your favorite books.\n\n" +
+                "Best Regards,\n" +
+                "Library Management Team";
+
+        emailService.sendSimpleMessage(userDto.getEmail(), subject, message);
+
         return new ResponseEntity<>(
                 new StandardResponse(201, "User registered successfully!", null),
                 HttpStatus.CREATED

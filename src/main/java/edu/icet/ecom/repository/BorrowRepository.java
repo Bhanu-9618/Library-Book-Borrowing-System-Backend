@@ -13,4 +13,6 @@ public interface BorrowRepository extends JpaRepository<BorrowEntity, Long> {
     List<BorrowEntity> findByUserEntity_Id(Long userId);
 
     List<BorrowEntity> findByStatusAndDueDateBefore(String status, LocalDate date);
+
+    List<BorrowEntity> findByStatusAndDueDate(String status, LocalDate date);
 }

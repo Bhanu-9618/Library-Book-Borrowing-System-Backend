@@ -1,5 +1,6 @@
 package edu.icet.ecom.service.Impl;
 
+import edu.icet.ecom.exception.ResourceNotFoundException;
 import edu.icet.ecom.model.dto.BorrowDto;
 import edu.icet.ecom.model.entity.BookEntity;
 import edu.icet.ecom.model.entity.BorrowEntity;
@@ -11,9 +12,10 @@ import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,61 +36,66 @@ public class BorrowServiceImpl implements BorrowService {
     @Override
     @Transactional
     public String saveDetails(BorrowDto borrowDto) {
-        if (!bookRepository.existsById(borrowDto.getBookid())) {
-            return "Book Not Found!";
-        }
+        BookEntity book = bookRepository.findById(borrowDto.getBookid())
+                .orElseThrow(() -> new ResourceNotFoundException("Book Not Found!"));
 
-        Optional<BookEntity> bookEntity = bookRepository.findById(borrowDto.getBookid());
-        BookEntity bookEntity1 = bookEntity.orElseThrow();
-
-        if(bookEntity1.getAvailableCopies() <= 0){
-            bookEntity1.setAvailability("unavailable");
-            bookRepository.save(bookEntity1);
-            return "All the books borrowed!";
+        if (book.getAvailableCopies() <= 0) {
+            return "Book is currently unavailable!";
         }
 
         if (!userRepository.existsById(borrowDto.getUserid())) {
-            return "User Not Found!";
+            throw new ResourceNotFoundException("User Not Found!");
         }
 
-        bookEntity1.setAvailableCopies(bookEntity1.getAvailableCopies() - 1);
-        if (bookEntity1.getAvailableCopies() <= 0) {
-            bookEntity1.setAvailability("unavailable");
+        book.setAvailableCopies(book.getAvailableCopies() - 1);
+        if (book.getAvailableCopies() == 0) {
+            book.setAvailability("unavailable");
         }
-        bookRepository.save(bookEntity1);
+        bookRepository.save(book);
 
-        BorrowEntity entity = mapper.map(borrowDto, BorrowEntity.class);
-        entity.setBookEntity(bookRepository.getReferenceById(borrowDto.getBookid()));
+        BorrowEntity entity = new BorrowEntity();
+        entity.setBookEntity(book);
         entity.setUserEntity(userRepository.getReferenceById(borrowDto.getUserid()));
 
+        entity.setStatus("REQUESTED");
+
+        entity.setBorrowdate(null);
+        entity.setDueDate(null);
+        entity.setReturnDate(null);
+
         borrowRepository.save(entity);
-        return "Borrow Successful!";
+        return "Book requested successfully. Waiting for admin approval.";
     }
 
     @Override
     @Transactional
     public String updateDetails(BorrowDto borrowDto) {
+        BorrowEntity existingBorrow = borrowRepository.findById(borrowDto.getBorrowid())
+                .orElseThrow(() -> new ResourceNotFoundException("Borrow Record Not Found!"));
 
-        Optional<BookEntity> bookEntity = bookRepository.findById(borrowDto.getBookid());
-        BookEntity bookEntity1 = bookEntity.orElseThrow();
+        BookEntity book = existingBorrow.getBookEntity();
 
-        BorrowEntity entity = mapper.map(borrowDto, BorrowEntity.class);
-        entity.setBookEntity(bookRepository.getReferenceById(borrowDto.getBookid()));
-        entity.setUserEntity(userRepository.getReferenceById(borrowDto.getUserid()));
-        
-        if (borrowDto.getBorrowid() != null) {
-            Optional<BorrowEntity> existingBorrow = borrowRepository.findById(borrowDto.getBorrowid());
-            if (existingBorrow.isPresent() && 
-                !"Returned".equalsIgnoreCase(existingBorrow.get().getStatus()) && 
-                "Returned".equalsIgnoreCase(borrowDto.getStatus())) {
-                bookEntity1.setAvailableCopies(bookEntity1.getAvailableCopies() + 1);
-                bookEntity1.setAvailability("available");
-                bookRepository.save(bookEntity1);
-            }
+        if ("ISSUED".equalsIgnoreCase(borrowDto.getStatus()) && "REQUESTED".equalsIgnoreCase(existingBorrow.getStatus())) {
+            existingBorrow.setStatus("ISSUED");
+            existingBorrow.setBorrowdate(LocalDate.now());
+            existingBorrow.setDueDate(LocalDate.now().plusDays(14));
+            borrowRepository.save(existingBorrow);
+            return "Book issued successfully. Due date set to 14 days from today.";
         }
 
-        borrowRepository.save(entity);
-        return "Updated Successful!";
+        if ("RETURNED".equalsIgnoreCase(borrowDto.getStatus()) && "ISSUED".equalsIgnoreCase(existingBorrow.getStatus())) {
+            existingBorrow.setStatus("RETURNED");
+            existingBorrow.setReturnDate(LocalDate.now());
+
+            book.setAvailableCopies(book.getAvailableCopies() + 1);
+            book.setAvailability("available");
+            bookRepository.save(book);
+
+            borrowRepository.save(existingBorrow);
+            return "Book returned successfully. Inventory updated.";
+        }
+
+        return "Invalid status update. Check current status.";
     }
 
     @Override
@@ -111,14 +118,12 @@ public class BorrowServiceImpl implements BorrowService {
 
         return entities.stream().map(entity -> {
             BorrowDto dto = mapper.map(entity, BorrowDto.class);
-
             if (entity.getUserEntity() != null) {
                 dto.setUserid(entity.getUserEntity().getId());
             }
             if (entity.getBookEntity() != null) {
                 dto.setBookid(entity.getBookEntity().getId());
             }
-
             return dto;
         }).collect(Collectors.toList());
     }

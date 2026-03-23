@@ -22,10 +22,8 @@ public class BorrowEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long borrowid;
 
-    @Column(nullable = false)
     private LocalDate borrowdate;
 
-    @Column(nullable = false)
     private LocalDate dueDate;
 
     private LocalDate returnDate;

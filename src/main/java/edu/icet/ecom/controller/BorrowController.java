@@ -6,6 +6,7 @@ import edu.icet.ecom.util.StandardResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class BorrowController {
     BorrowService borrowService;
 
     @PostMapping("/save")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<StandardResponse> save(@RequestBody BorrowDto borrowDto){
         String result = borrowService.saveDetails(borrowDto);
         return new ResponseEntity<>(
@@ -27,6 +29,7 @@ public class BorrowController {
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponse> update(@RequestBody BorrowDto borrowDto) {
         String result = borrowService.updateDetails(borrowDto);
         return new ResponseEntity<>(
@@ -36,6 +39,7 @@ public class BorrowController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponse> getAllHistory() {
         List<BorrowDto> history = borrowService.getAllHistory();
         return new ResponseEntity<>(
@@ -45,6 +49,7 @@ public class BorrowController {
     }
 
     @GetMapping("/search/{userid}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<StandardResponse> getHistoryByUserId(@PathVariable Long userid) {
         List<BorrowDto> history = borrowService.getHistoryByUserId(userid);
         return new ResponseEntity<>(

@@ -1,10 +1,14 @@
 package edu.icet.ecom.model.entity;
 
+import edu.icet.ecom.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import edu.icet.ecom.model.enums.Role;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -12,6 +16,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @ToString
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class UserEntity {
 
     @Id
@@ -40,4 +45,10 @@ public class UserEntity {
     @Column(nullable = false)
     private Role role;
 
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 }

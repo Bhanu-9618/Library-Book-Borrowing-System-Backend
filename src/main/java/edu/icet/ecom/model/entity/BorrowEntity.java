@@ -2,8 +2,12 @@ package edu.icet.ecom.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -11,6 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @ToString
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class BorrowEntity {
 
     @Id
@@ -19,10 +24,12 @@ public class BorrowEntity {
 
     @Column(nullable = false)
     private LocalDate borrowdate;
+
     @Column(nullable = false)
     private LocalDate dueDate;
 
     private LocalDate returnDate;
+
     @Column(nullable = false)
     private String status;
 
@@ -34,5 +41,10 @@ public class BorrowEntity {
     @JoinColumn(name = "UserId")
     private UserEntity userEntity;
 
-}
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+}

@@ -2,7 +2,10 @@ package edu.icet.ecom.controller;
 
 import edu.icet.ecom.model.dto.UserDto;
 import edu.icet.ecom.service.UserService;
+import edu.icet.ecom.util.StandardResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,26 +21,41 @@ public class UserController {
 
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
-    public UserDto save(@RequestBody UserDto user){
+    public ResponseEntity<StandardResponse> save(@RequestBody UserDto user){
         userService.save(user);
-        return user;
+        return new ResponseEntity<>(
+                new StandardResponse(201, "User Saved Successfully", user),
+                HttpStatus.CREATED
+        );
     }
 
     @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<UserDto> getDetails(){
-        return userService.getAllDetails();
+    public ResponseEntity<StandardResponse> getDetails(){
+        List<UserDto> allUsers = userService.getAllDetails();
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Success", allUsers),
+                HttpStatus.OK
+        );
     }
 
     @PutMapping("/update")
     @PreAuthorize("hasRole('ADMIN')")
-    public void updateUser(@RequestBody UserDto user){
+    public ResponseEntity<StandardResponse> updateUser(@RequestBody UserDto user){
         userService.updateUser(user);
+        return new ResponseEntity<>(
+                new StandardResponse(200, "User Updated Successfully", null),
+                HttpStatus.OK
+        );
     }
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public void deleteUser(@PathVariable Long id){
+    public ResponseEntity<StandardResponse> deleteUser(@PathVariable Long id){
         userService.deleteUser(id);
+        return new ResponseEntity<>(
+                new StandardResponse(200, "User Deleted Successfully", null),
+                HttpStatus.OK
+        );
     }
 }

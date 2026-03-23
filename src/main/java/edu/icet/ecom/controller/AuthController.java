@@ -5,7 +5,10 @@ import edu.icet.ecom.model.dto.UserDto;
 import edu.icet.ecom.security.JwtUtils;
 import edu.icet.ecom.security.UserDetailsImpl;
 import edu.icet.ecom.service.UserService;
+import edu.icet.ecom.util.StandardResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,15 +35,17 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping("/signup")
-    public String registerUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<StandardResponse> registerUser(@Valid @RequestBody UserDto userDto) {
         userDto.setRole(Role.USER);
         userService.save(userDto);
-        return "User registered successfully!";
+        return new ResponseEntity<>(
+                new StandardResponse(201, "User registered successfully!", null),
+                HttpStatus.CREATED
+        );
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginDto loginDto) {
-
+    public ResponseEntity<StandardResponse> authenticateUser(@RequestBody LoginDto loginDto) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
 
@@ -49,12 +54,15 @@ public class AuthController {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         String jwt = jwtUtils.generateToken(userDetails.getEmail());
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("token", jwt);
-        response.put("id", userDetails.getId());
-        response.put("email", userDetails.getEmail());
-        response.put("role", userDetails.getRole());
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("token", jwt);
+        responseData.put("id", userDetails.getId());
+        responseData.put("email", userDetails.getEmail());
+        responseData.put("role", userDetails.getRole());
 
-        return ResponseEntity.ok(response);
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Login Successful", responseData),
+                HttpStatus.OK
+        );
     }
 }

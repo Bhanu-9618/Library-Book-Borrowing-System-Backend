@@ -4,8 +4,10 @@ import edu.icet.ecom.exception.ResourceNotFoundException;
 import edu.icet.ecom.model.dto.BorrowDto;
 import edu.icet.ecom.model.entity.BookEntity;
 import edu.icet.ecom.model.entity.BorrowEntity;
+import edu.icet.ecom.model.entity.FineEntity;
 import edu.icet.ecom.repository.BookRepository;
 import edu.icet.ecom.repository.BorrowRepository;
+import edu.icet.ecom.repository.FineRepository;
 import edu.icet.ecom.repository.UserRepository;
 import edu.icet.ecom.service.BorrowService;
 import jakarta.transaction.Transactional;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,6 +35,9 @@ public class BorrowServiceImpl implements BorrowService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    FineRepository fineRepository;
 
     @Override
     @Transactional
@@ -56,9 +62,7 @@ public class BorrowServiceImpl implements BorrowService {
         BorrowEntity entity = new BorrowEntity();
         entity.setBookEntity(book);
         entity.setUserEntity(userRepository.getReferenceById(borrowDto.getUserid()));
-
         entity.setStatus("REQUESTED");
-
         entity.setBorrowdate(null);
         entity.setDueDate(null);
         entity.setReturnDate(null);
@@ -85,13 +89,35 @@ public class BorrowServiceImpl implements BorrowService {
 
         if ("RETURNED".equalsIgnoreCase(borrowDto.getStatus()) && "ISSUED".equalsIgnoreCase(existingBorrow.getStatus())) {
             existingBorrow.setStatus("RETURNED");
-            existingBorrow.setReturnDate(LocalDate.now());
+            LocalDate returnDate = LocalDate.now();
+            existingBorrow.setReturnDate(returnDate);
 
             book.setAvailableCopies(book.getAvailableCopies() + 1);
             book.setAvailability("available");
             bookRepository.save(book);
 
             borrowRepository.save(existingBorrow);
+
+            if (returnDate.isAfter(existingBorrow.getDueDate())) {
+                long daysLate = ChronoUnit.DAYS.between(existingBorrow.getDueDate(), returnDate);
+                double finalFineAmount = daysLate * 50.0;
+
+                FineEntity fine = fineRepository.findByBorrowEntity_Borrowid(existingBorrow.getBorrowid())
+                        .orElse(new FineEntity());
+
+                fine.setBorrowEntity(existingBorrow);
+                fine.setUserEntity(existingBorrow.getUserEntity());
+                fine.setFineAmount(finalFineAmount);
+
+                if (fine.getPaymentStatus() == null) {
+                    fine.setPaymentStatus("UNPAID");
+                }
+
+                fineRepository.save(fine);
+
+                return "Book returned successfully. Late fine of Rs " + finalFineAmount + " applied.";
+            }
+
             return "Book returned successfully. Inventory updated.";
         }
 

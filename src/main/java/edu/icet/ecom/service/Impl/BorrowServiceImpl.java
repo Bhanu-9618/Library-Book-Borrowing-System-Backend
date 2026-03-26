@@ -153,4 +153,9 @@ public class BorrowServiceImpl implements BorrowService {
             return dto;
         }).collect(Collectors.toList());
     }
+
+    @Override
+    public long getTotalBorrowCount() {
+        return borrowRepository.count();
+    }
 }

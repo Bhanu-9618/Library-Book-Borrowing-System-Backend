@@ -8,4 +8,5 @@ public interface BorrowService {
     String updateDetails(BorrowDto borrowDto); // Added Update
     List<BorrowDto> getAllHistory(); // For History view
     List<BorrowDto> getHistoryByUserId(Long userid);
+    long getTotalBorrowCount();
 }

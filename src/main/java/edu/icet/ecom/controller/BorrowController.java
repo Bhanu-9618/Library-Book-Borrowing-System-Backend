@@ -57,4 +57,13 @@ public class BorrowController {
                 HttpStatus.OK
         );
     }
+
+    @GetMapping("/count")
+    public ResponseEntity<StandardResponse> getTotalBorrowCount() {
+        long count = borrowService.getTotalBorrowCount();
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Success", count),
+                HttpStatus.OK
+        );
+    }
 }

@@ -7,6 +7,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import edu.icet.ecom.model.enums.PaymentStatus;
 
 @Setter
 @Getter
@@ -24,8 +25,9 @@ public class FineEntity {
     @Column(nullable = false)
     private Double fineAmount;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String paymentStatus;
+    private PaymentStatus paymentStatus;
 
     @OneToOne
     @JoinColumn(name = "borrowId", nullable = false)

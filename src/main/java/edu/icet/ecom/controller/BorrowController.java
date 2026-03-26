@@ -1,6 +1,7 @@
 package edu.icet.ecom.controller;
 
 import edu.icet.ecom.model.dto.BorrowDto;
+import edu.icet.ecom.model.dto.OverdueResponseDto;
 import edu.icet.ecom.service.BorrowService;
 import edu.icet.ecom.util.StandardResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +82,26 @@ public class BorrowController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StandardResponse> getRequestedCount() {
         long count = borrowService.getRequestedCount();
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Success", count),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/overdue")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StandardResponse> getOverdueHistory() {
+        List<OverdueResponseDto> history = borrowService.getOverdueHistory();
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Success", history),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/overdue/count")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StandardResponse> getOverdueCount() {
+        long count = borrowService.getOverdueCount();
         return new ResponseEntity<>(
                 new StandardResponse(200, "Success", count),
                 HttpStatus.OK

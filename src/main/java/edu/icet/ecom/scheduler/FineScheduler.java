@@ -15,6 +15,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import edu.icet.ecom.model.enums.BorrowStatus;
+import edu.icet.ecom.model.enums.PaymentStatus;
 
 @Component
 public class FineScheduler {
@@ -32,9 +33,13 @@ public class FineScheduler {
     @Transactional
     public void calculateLateFines() {
         LocalDate today = LocalDate.now();
-        List<BorrowEntity> overdueBorrows = borrowRepository.findByStatusAndDueDateBefore(BorrowStatus.ISSUED, today);
+        List<BorrowEntity> overdueBorrows = borrowRepository.findByStatusInAndDueDateBefore(java.util.Arrays.asList(BorrowStatus.ISSUED, BorrowStatus.OVERDUE), today);
 
         for (BorrowEntity borrow : overdueBorrows) {
+            if (borrow.getStatus() != BorrowStatus.OVERDUE) {
+                borrow.setStatus(BorrowStatus.OVERDUE);
+                borrowRepository.save(borrow);
+            }
             long daysLate = ChronoUnit.DAYS.between(borrow.getDueDate(), today);
             double calculatedFine = daysLate * 50.0;
 
@@ -49,7 +54,7 @@ public class FineScheduler {
                 newFine.setBorrowEntity(borrow);
                 newFine.setUserEntity(borrow.getUserEntity());
                 newFine.setFineAmount(calculatedFine);
-                newFine.setPaymentStatus("UNPAID");
+                newFine.setPaymentStatus(PaymentStatus.UNPAID);
                 fineRepository.save(newFine);
             }
         }

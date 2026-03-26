@@ -2,6 +2,7 @@ package edu.icet.ecom.service;
 
 import edu.icet.ecom.model.dto.BorrowDto;
 import java.util.List;
+import edu.icet.ecom.model.dto.OverdueResponseDto;
 
 public interface BorrowService {
     String saveDetails(BorrowDto borrowDto);
@@ -11,4 +12,6 @@ public interface BorrowService {
     long getTotalBorrowCount();
     List<BorrowDto> getRequestedHistory();
     long getRequestedCount();
+    List<OverdueResponseDto> getOverdueHistory();
+    long getOverdueCount();
 }

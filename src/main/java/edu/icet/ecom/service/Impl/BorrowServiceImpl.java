@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import edu.icet.ecom.model.enums.BorrowStatus;
+import edu.icet.ecom.model.enums.PaymentStatus;
+import edu.icet.ecom.model.dto.OverdueResponseDto;
+import java.util.Optional;
 
 @Service
 public class BorrowServiceImpl implements BorrowService {
@@ -88,7 +91,7 @@ public class BorrowServiceImpl implements BorrowService {
             return "Book issued successfully. Due date set to 14 days from today.";
         }
 
-        if (BorrowStatus.RETURNED == borrowDto.getStatus() && BorrowStatus.ISSUED == existingBorrow.getStatus()) {
+        if (BorrowStatus.RETURNED == borrowDto.getStatus() && (BorrowStatus.ISSUED == existingBorrow.getStatus() || BorrowStatus.OVERDUE == existingBorrow.getStatus())) {
             existingBorrow.setStatus(BorrowStatus.RETURNED);
             LocalDate returnDate = LocalDate.now();
             existingBorrow.setReturnDate(returnDate);
@@ -111,7 +114,7 @@ public class BorrowServiceImpl implements BorrowService {
                 fine.setFineAmount(finalFineAmount);
 
                 if (fine.getPaymentStatus() == null) {
-                    fine.setPaymentStatus("UNPAID");
+                    fine.setPaymentStatus(PaymentStatus.UNPAID);
                 }
 
                 fineRepository.save(fine);
@@ -174,5 +177,31 @@ public class BorrowServiceImpl implements BorrowService {
     @Override
     public long getRequestedCount() {
         return borrowRepository.countByStatus(BorrowStatus.REQUESTED);
+    }
+
+    @Override
+    public List<OverdueResponseDto> getOverdueHistory() {
+        List<BorrowEntity> overdueEntities = borrowRepository.findByStatus(BorrowStatus.OVERDUE);
+        List<OverdueResponseDto> list = new ArrayList<>();
+        for (BorrowEntity entity : overdueEntities) {
+            Optional<FineEntity> fineOpt = fineRepository.findByBorrowEntity_Borrowid(entity.getBorrowid());
+            OverdueResponseDto dto = new OverdueResponseDto();
+            dto.setUserid(entity.getUserEntity().getId());
+            dto.setBorrowid(entity.getBorrowid());
+            if (fineOpt.isPresent()) {
+                dto.setFineAmount(fineOpt.get().getFineAmount());
+                dto.setPaymentStatus(fineOpt.get().getPaymentStatus());
+            } else {
+                dto.setFineAmount(0.0);
+                dto.setPaymentStatus(PaymentStatus.UNPAID);
+            }
+            list.add(dto);
+        }
+        return list;
+    }
+
+    @Override
+    public long getOverdueCount() {
+        return borrowRepository.countByStatus(BorrowStatus.OVERDUE);
     }
 }

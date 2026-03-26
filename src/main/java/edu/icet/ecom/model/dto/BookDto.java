@@ -15,5 +15,5 @@ public class BookDto {
     private String isbn;
     private String category;
     private int availableCopies;
-    private String availability;
+    private boolean available = true;
 }

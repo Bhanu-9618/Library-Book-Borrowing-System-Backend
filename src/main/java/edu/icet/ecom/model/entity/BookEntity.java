@@ -40,7 +40,7 @@ public class BookEntity {
     private int availableCopies;
 
     @Column(nullable = false)
-    private String availability;
+    private boolean available = true;
 
     @CreatedDate
     @Column(updatable = false)

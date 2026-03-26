@@ -55,7 +55,7 @@ public class BorrowServiceImpl implements BorrowService {
 
         book.setAvailableCopies(book.getAvailableCopies() - 1);
         if (book.getAvailableCopies() == 0) {
-            book.setAvailability("unavailable");
+            book.setAvailable(false);
         }
         bookRepository.save(book);
 
@@ -93,7 +93,7 @@ public class BorrowServiceImpl implements BorrowService {
             existingBorrow.setReturnDate(returnDate);
 
             book.setAvailableCopies(book.getAvailableCopies() + 1);
-            book.setAvailability("available");
+            book.setAvailable(true);
             bookRepository.save(book);
 
             borrowRepository.save(existingBorrow);

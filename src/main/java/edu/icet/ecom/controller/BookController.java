@@ -65,7 +65,7 @@ public class BookController {
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<StandardResponse> getDetails(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "24") int size,
+            @RequestParam(defaultValue = "16") int size,
             @RequestParam(required = false) BookCategory category) {
 
         Map<String, Object> paginatedData = bookService.getPaginatedBooks(page, size, category);
@@ -81,7 +81,7 @@ public class BookController {
     public ResponseEntity<StandardResponse> searchBooks(
             @RequestParam String term,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "24") int size) {
+            @RequestParam(defaultValue = "16") int size) {
 
         Map<String, Object> paginatedData = bookService.searchPaginatedBooks(term, page, size);
 

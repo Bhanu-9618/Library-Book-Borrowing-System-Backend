@@ -96,4 +96,9 @@ public class BookServiceImpl implements BookService {
 
         return response;
     }
+
+    @Override
+    public long getTotalBooksCount() {
+        return bookRepository.count();
+    }
 }

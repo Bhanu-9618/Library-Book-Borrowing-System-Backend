@@ -88,4 +88,13 @@ public class BookController {
                 HttpStatus.OK
         );
     }
+
+    @GetMapping("/count")
+    public ResponseEntity<StandardResponse> getTotalBooksCount() {
+        long count = bookService.getTotalBooksCount();
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Success", count),
+                HttpStatus.OK
+        );
+    }
 }

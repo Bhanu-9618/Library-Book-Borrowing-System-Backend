@@ -20,4 +20,6 @@ public interface BookService {
     Map<String, Object> getPaginatedBooks(int page, int size);
 
     Map<String, Object> searchPaginatedBooks(String term, int page, int size);
+
+    long getTotalBooksCount();
 }

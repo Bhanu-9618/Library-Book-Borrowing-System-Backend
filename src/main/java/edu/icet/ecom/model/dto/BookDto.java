@@ -1,6 +1,7 @@
 package edu.icet.ecom.model.dto;
 
 import lombok.*;
+import edu.icet.ecom.model.enums.BookCategory;
 
 @Setter
 @Getter
@@ -13,7 +14,7 @@ public class BookDto {
     private String author;
     private String publisher;
     private String isbn;
-    private String category;
+    private BookCategory category;
     private int availableCopies;
     private boolean available = true;
 }

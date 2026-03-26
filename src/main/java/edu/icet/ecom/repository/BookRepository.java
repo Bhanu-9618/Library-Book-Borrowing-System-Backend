@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import edu.icet.ecom.model.enums.BookCategory;
 
 @Repository
 public interface BookRepository extends JpaRepository<BookEntity, Long> {
@@ -17,6 +18,8 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
 
     Optional<BookEntity> findById(Long id);
 
-    @Query("SELECT b FROM BookEntity b WHERE LOWER(b.title) LIKE LOWER(CONCAT('%', :term, '%')) OR LOWER(b.author) LIKE LOWER(CONCAT('%', :term, '%')) OR LOWER(b.category) LIKE LOWER(CONCAT('%', :term, '%'))")
+    Page<BookEntity> findByCategory(BookCategory category, Pageable pageable);
+
+    @Query("SELECT b FROM BookEntity b WHERE LOWER(b.title) LIKE LOWER(CONCAT('%', :term, '%')) OR LOWER(b.author) LIKE LOWER(CONCAT('%', :term, '%'))")
     Page<BookEntity> searchBooksByTerm(@Param("term") String term, Pageable pageable);
 }

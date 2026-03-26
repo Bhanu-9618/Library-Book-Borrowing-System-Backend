@@ -7,6 +7,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import edu.icet.ecom.model.enums.BookCategory;
 
 @Setter
 @Getter
@@ -33,8 +34,9 @@ public class BookEntity {
     @Column(nullable = false)
     private String isbn;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String category;
+    private BookCategory category;
 
     @Column(nullable = false)
     private int availableCopies;

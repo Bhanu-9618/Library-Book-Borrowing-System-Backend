@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import edu.icet.ecom.model.enums.BookCategory;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -68,9 +69,14 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Map<String, Object> getPaginatedBooks(int page, int size) {
+    public Map<String, Object> getPaginatedBooks(int page, int size, BookCategory category) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<BookEntity> bookPage = bookRepository.findAll(pageable);
+        Page<BookEntity> bookPage;
+        if (category != null) {
+            bookPage = bookRepository.findByCategory(category, pageable);
+        } else {
+            bookPage = bookRepository.findAll(pageable);
+        }
         return createPaginatedResponse(bookPage);
     }
 

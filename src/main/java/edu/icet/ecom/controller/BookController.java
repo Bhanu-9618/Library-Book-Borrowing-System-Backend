@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import edu.icet.ecom.model.enums.BookCategory;
 
 @RestController
 @RequestMapping("/book")
@@ -64,9 +65,10 @@ public class BookController {
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<StandardResponse> getDetails(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "24") int size) {
+            @RequestParam(defaultValue = "24") int size,
+            @RequestParam(required = false) BookCategory category) {
 
-        Map<String, Object> paginatedData = bookService.getPaginatedBooks(page, size);
+        Map<String, Object> paginatedData = bookService.getPaginatedBooks(page, size, category);
 
         return new ResponseEntity<>(
                 new StandardResponse(200, "Success", paginatedData),

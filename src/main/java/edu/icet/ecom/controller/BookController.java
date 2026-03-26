@@ -99,4 +99,13 @@ public class BookController {
                 HttpStatus.OK
         );
     }
+
+    @GetMapping("/categories")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public ResponseEntity<StandardResponse> getAllCategories() {
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Success", BookCategory.values()),
+                HttpStatus.OK
+        );
+    }
 }

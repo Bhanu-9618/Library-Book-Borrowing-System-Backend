@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import edu.icet.ecom.model.enums.BorrowStatus;
 
 @Setter
 @Getter
@@ -28,8 +29,9 @@ public class BorrowEntity {
 
     private LocalDate returnDate;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private BorrowStatus status;
 
     @ManyToOne
     @JoinColumn(name = "bookId")

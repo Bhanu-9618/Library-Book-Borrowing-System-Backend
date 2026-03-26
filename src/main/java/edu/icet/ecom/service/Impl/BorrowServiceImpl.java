@@ -20,6 +20,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import edu.icet.ecom.model.enums.BorrowStatus;
 
 @Service
 public class BorrowServiceImpl implements BorrowService {
@@ -62,7 +63,7 @@ public class BorrowServiceImpl implements BorrowService {
         BorrowEntity entity = new BorrowEntity();
         entity.setBookEntity(book);
         entity.setUserEntity(userRepository.getReferenceById(borrowDto.getUserid()));
-        entity.setStatus("REQUESTED");
+        entity.setStatus(BorrowStatus.REQUESTED);
         entity.setBorrowdate(null);
         entity.setDueDate(null);
         entity.setReturnDate(null);
@@ -79,16 +80,16 @@ public class BorrowServiceImpl implements BorrowService {
 
         BookEntity book = existingBorrow.getBookEntity();
 
-        if ("ISSUED".equalsIgnoreCase(borrowDto.getStatus()) && "REQUESTED".equalsIgnoreCase(existingBorrow.getStatus())) {
-            existingBorrow.setStatus("ISSUED");
+        if (BorrowStatus.ISSUED == borrowDto.getStatus() && BorrowStatus.REQUESTED == existingBorrow.getStatus()) {
+            existingBorrow.setStatus(BorrowStatus.ISSUED);
             existingBorrow.setBorrowdate(LocalDate.now());
             existingBorrow.setDueDate(LocalDate.now().plusDays(14));
             borrowRepository.save(existingBorrow);
             return "Book issued successfully. Due date set to 14 days from today.";
         }
 
-        if ("RETURNED".equalsIgnoreCase(borrowDto.getStatus()) && "ISSUED".equalsIgnoreCase(existingBorrow.getStatus())) {
-            existingBorrow.setStatus("RETURNED");
+        if (BorrowStatus.RETURNED == borrowDto.getStatus() && BorrowStatus.ISSUED == existingBorrow.getStatus()) {
+            existingBorrow.setStatus(BorrowStatus.RETURNED);
             LocalDate returnDate = LocalDate.now();
             existingBorrow.setReturnDate(returnDate);
 
@@ -157,5 +158,21 @@ public class BorrowServiceImpl implements BorrowService {
     @Override
     public long getTotalBorrowCount() {
         return borrowRepository.count();
+    }
+
+    @Override
+    public List<BorrowDto> getRequestedHistory() {
+        List<BorrowEntity> entities = borrowRepository.findByStatus(BorrowStatus.REQUESTED);
+        return entities.stream().map(entity -> {
+            BorrowDto dto = mapper.map(entity, BorrowDto.class);
+            if (entity.getUserEntity() != null) dto.setUserid(entity.getUserEntity().getId());
+            if (entity.getBookEntity() != null) dto.setBookid(entity.getBookEntity().getId());
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public long getRequestedCount() {
+        return borrowRepository.countByStatus(BorrowStatus.REQUESTED);
     }
 }

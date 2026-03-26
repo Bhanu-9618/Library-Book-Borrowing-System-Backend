@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import edu.icet.ecom.model.enums.BorrowStatus;
 
 @Component
 public class FineScheduler {
@@ -31,7 +32,7 @@ public class FineScheduler {
     @Transactional
     public void calculateLateFines() {
         LocalDate today = LocalDate.now();
-        List<BorrowEntity> overdueBorrows = borrowRepository.findByStatusAndDueDateBefore("ISSUED", today);
+        List<BorrowEntity> overdueBorrows = borrowRepository.findByStatusAndDueDateBefore(BorrowStatus.ISSUED, today);
 
         for (BorrowEntity borrow : overdueBorrows) {
             long daysLate = ChronoUnit.DAYS.between(borrow.getDueDate(), today);
@@ -58,7 +59,7 @@ public class FineScheduler {
     @Transactional
     public void sendDueReminders() {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        List<BorrowEntity> upcomingReturns = borrowRepository.findByStatusAndDueDate("ISSUED", tomorrow);
+        List<BorrowEntity> upcomingReturns = borrowRepository.findByStatusAndDueDate(BorrowStatus.ISSUED, tomorrow);
 
         for (BorrowEntity borrow : upcomingReturns) {
             String toEmail = borrow.getUserEntity().getEmail();

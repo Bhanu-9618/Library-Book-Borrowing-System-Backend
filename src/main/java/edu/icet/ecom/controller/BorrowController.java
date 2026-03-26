@@ -66,4 +66,24 @@ public class BorrowController {
                 HttpStatus.OK
         );
     }
+
+    @GetMapping("/requested")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StandardResponse> getRequestedHistory() {
+        List<BorrowDto> history = borrowService.getRequestedHistory();
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Success", history),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/requested/count")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StandardResponse> getRequestedCount() {
+        long count = borrowService.getRequestedCount();
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Success", count),
+                HttpStatus.OK
+        );
+    }
 }

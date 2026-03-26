@@ -9,4 +9,6 @@ public interface BorrowService {
     List<BorrowDto> getAllHistory(); // For History view
     List<BorrowDto> getHistoryByUserId(Long userid);
     long getTotalBorrowCount();
+    List<BorrowDto> getRequestedHistory();
+    long getRequestedCount();
 }

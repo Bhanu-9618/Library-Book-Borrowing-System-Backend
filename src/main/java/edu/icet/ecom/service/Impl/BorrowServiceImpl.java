@@ -204,4 +204,9 @@ public class BorrowServiceImpl implements BorrowService {
     public long getOverdueCount() {
         return borrowRepository.countByStatus(BorrowStatus.OVERDUE);
     }
+
+    @Override
+    public long getIssuedCount() {
+        return borrowRepository.countByStatus(BorrowStatus.ISSUED);
+    }
 }

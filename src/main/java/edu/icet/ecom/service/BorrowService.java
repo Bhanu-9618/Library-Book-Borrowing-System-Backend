@@ -14,4 +14,5 @@ public interface BorrowService {
     long getRequestedCount();
     List<OverdueResponseDto> getOverdueHistory();
     long getOverdueCount();
+    long getIssuedCount();
 }

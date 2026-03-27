@@ -107,4 +107,14 @@ public class BorrowController {
                 HttpStatus.OK
         );
     }
+
+    @GetMapping("/issued/count")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StandardResponse> getIssuedCount() {
+        long count = borrowService.getIssuedCount();
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Success", count),
+                HttpStatus.OK
+        );
+    }
 }

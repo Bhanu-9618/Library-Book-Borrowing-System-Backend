@@ -77,7 +77,6 @@ public class UserController {
     }
 
     @GetMapping("/count")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<StandardResponse> getTotalCount(){
         long totalUsers = userService.getTotalCount();
         return new ResponseEntity<>(

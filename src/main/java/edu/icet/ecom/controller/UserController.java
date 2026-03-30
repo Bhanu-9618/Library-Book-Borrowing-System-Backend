@@ -58,4 +58,21 @@ public class UserController {
                 HttpStatus.OK
         );
     }
+
+    @GetMapping("/search/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StandardResponse> searchUserById(@PathVariable Long id){
+        UserDto user = userService.getUserById(id);
+        if (user != null) {
+            return new ResponseEntity<>(
+                    new StandardResponse(200, "Success", user),
+                    HttpStatus.OK
+            );
+        } else {
+            return new ResponseEntity<>(
+                    new StandardResponse(404, "User Not Found", null),
+                    HttpStatus.NOT_FOUND
+            );
+        }
+    }
 }

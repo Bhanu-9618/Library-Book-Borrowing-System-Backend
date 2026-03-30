@@ -103,4 +103,11 @@ public class UserServiceImpl implements UserService {
                 .map(entity -> mapper.map(entity, UserDto.class))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public UserDto getUserById(Long id) {
+        return userRepository.findById(id)
+                .map(entity -> mapper.map(entity, UserDto.class))
+                .orElse(null);
+    }
 }

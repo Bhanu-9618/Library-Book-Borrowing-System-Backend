@@ -71,6 +71,7 @@ public class AuthController {
         Map<String, Object> responseData = new HashMap<>();
         responseData.put("token", jwt);
         responseData.put("id", userDetails.getId());
+        responseData.put("name", userDetails.getName());
         responseData.put("email", userDetails.getEmail());
         responseData.put("role", userDetails.getRole());
 

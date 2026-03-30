@@ -15,6 +15,7 @@ import edu.icet.ecom.model.enums.Role;
 public class UserDetailsImpl implements UserDetails {
 
     private Long id;
+    private String name;
     private String email;
     private String password;
     private Role role;
@@ -22,6 +23,7 @@ public class UserDetailsImpl implements UserDetails {
     public static UserDetailsImpl build(UserEntity user) {
         return new UserDetailsImpl(
                 user.getId(),
+                user.getName(),
                 user.getEmail(),
                 user.getPassword(),
                 user.getRole()

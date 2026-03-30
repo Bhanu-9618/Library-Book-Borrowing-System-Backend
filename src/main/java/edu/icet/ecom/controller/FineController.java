@@ -6,6 +6,7 @@ import edu.icet.ecom.util.StandardResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,5 +32,15 @@ public class FineController {
                     HttpStatus.NOT_FOUND
             );
         }
+    }
+
+    @PutMapping("/update-payment")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StandardResponse> updatePaymentStatus(@RequestParam Long borrowId, @RequestParam String status) {
+        fineService.updateFineStatus(borrowId, status);
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Fine status and Borrow status updated successfully", null),
+                HttpStatus.OK
+        );
     }
 }

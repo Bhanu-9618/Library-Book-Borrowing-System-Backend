@@ -11,4 +11,5 @@ public interface UserService {
     void deleteUser(Long id);
     List<UserDto> searchUsers(String term);
     UserDto getUserById(Long id);
+    long getTotalCount();
 }

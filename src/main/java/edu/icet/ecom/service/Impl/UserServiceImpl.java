@@ -110,4 +110,9 @@ public class UserServiceImpl implements UserService {
                 .map(entity -> mapper.map(entity, UserDto.class))
                 .orElse(null);
     }
+
+    @Override
+    public long getTotalCount() {
+        return userRepository.count();
+    }
 }

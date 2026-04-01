@@ -45,6 +45,9 @@ public class UserEntity {
     @Column(nullable = false)
     private Role role;
 
+    @Column(nullable = false)
+    private Boolean isActive = true;
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;

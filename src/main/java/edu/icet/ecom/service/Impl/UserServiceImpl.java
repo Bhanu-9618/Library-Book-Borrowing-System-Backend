@@ -41,6 +41,7 @@ public class UserServiceImpl implements UserService {
             admin.setAddress("System");
             admin.setMembershipdate(LocalDate.now());
             admin.setRole(Role.ADMIN);
+            admin.setIsActive(true);
             userRepository.save(admin);
         }
     }
@@ -50,6 +51,7 @@ public class UserServiceImpl implements UserService {
         if (!userRepository.existsByEmail(user.getEmail())) {
             UserEntity userEntity = mapper.map(user, UserEntity.class);
             userEntity.setPassword(passwordEncoder.encode(user.getPassword()));
+            userEntity.setIsActive(true); // Default to active
             if (user.getRole() == null) {
                 userEntity.setRole(Role.USER);
             } else {
@@ -82,9 +84,21 @@ public class UserServiceImpl implements UserService {
                     && !currentEntity.getEmail().equals(user.getEmail());
 
             if (!emailExistsInOthers) {
+                currentEntity.setName(user.getName());
                 currentEntity.setEmail(user.getEmail());
                 currentEntity.setPhone(user.getPhone());
                 currentEntity.setAddress(user.getAddress());
+                currentEntity.setMembershipdate(user.getMembershipdate());
+                currentEntity.setRole(user.getRole());
+                
+                if (user.getIsActive() != null) {
+                    currentEntity.setIsActive(user.getIsActive());
+                }
+
+                // Only update password if a new one is provided (it's not blank or the default 'unknown')
+                if (user.getPassword() != null && !user.getPassword().isBlank() && !user.getPassword().equals("********")) {
+                    currentEntity.setPassword(passwordEncoder.encode(user.getPassword()));
+                }
 
                 userRepository.save(currentEntity);
             }
@@ -94,7 +108,12 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+        Optional<UserEntity> user = userRepository.findById(id);
+        if (user.isPresent()) {
+            UserEntity entity = user.get();
+            entity.setIsActive(false); // Soft Delete
+            userRepository.save(entity);
+        }
     }
 
     @Override

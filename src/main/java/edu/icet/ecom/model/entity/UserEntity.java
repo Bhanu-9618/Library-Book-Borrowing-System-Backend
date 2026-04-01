@@ -45,7 +45,7 @@ public class UserEntity {
     @Column(nullable = false)
     private Role role;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT true")
     private Boolean isActive = true;
 
     @CreatedDate

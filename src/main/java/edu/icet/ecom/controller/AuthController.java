@@ -60,24 +60,36 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<StandardResponse> authenticateUser(@RequestBody LoginDto loginDto) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        String jwt = jwtUtils.generateToken(userDetails.getEmail());
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            String jwt = jwtUtils.generateToken(userDetails.getEmail());
 
-        Map<String, Object> responseData = new HashMap<>();
-        responseData.put("token", jwt);
-        responseData.put("id", userDetails.getId());
-        responseData.put("name", userDetails.getName());
-        responseData.put("email", userDetails.getEmail());
-        responseData.put("role", userDetails.getRole());
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("token", jwt);
+            responseData.put("id", userDetails.getId());
+            responseData.put("name", userDetails.getName());
+            responseData.put("email", userDetails.getEmail());
+            responseData.put("role", userDetails.getRole());
 
-        return new ResponseEntity<>(
-                new StandardResponse(200, "Login Successful", responseData),
-                HttpStatus.OK
-        );
+            return new ResponseEntity<>(
+                    new StandardResponse(200, "Login Successful", responseData),
+                    HttpStatus.OK
+            );
+        } catch (org.springframework.security.authentication.DisabledException e) {
+            return new ResponseEntity<>(
+                    new StandardResponse(403, "Account is disabled. Please contact admin.", null),
+                    HttpStatus.FORBIDDEN
+            );
+        } catch (org.springframework.security.core.AuthenticationException e) {
+            return new ResponseEntity<>(
+                    new StandardResponse(401, "Invalid email or password", null),
+                    HttpStatus.UNAUTHORIZED
+            );
+        }
     }
 }

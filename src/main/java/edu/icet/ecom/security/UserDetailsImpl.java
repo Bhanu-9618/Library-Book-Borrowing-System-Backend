@@ -19,6 +19,7 @@ public class UserDetailsImpl implements UserDetails {
     private String email;
     private String password;
     private Role role;
+    private Boolean isActive;
 
     public static UserDetailsImpl build(UserEntity user) {
         return new UserDetailsImpl(
@@ -26,7 +27,8 @@ public class UserDetailsImpl implements UserDetails {
                 user.getName(),
                 user.getEmail(),
                 user.getPassword(),
-                user.getRole()
+                user.getRole(),
+                user.getIsActive()
         );
     }
 
@@ -57,6 +59,6 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return Boolean.TRUE.equals(isActive);
     }
 }

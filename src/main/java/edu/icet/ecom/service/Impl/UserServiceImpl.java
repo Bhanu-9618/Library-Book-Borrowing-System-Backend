@@ -95,8 +95,8 @@ public class UserServiceImpl implements UserService {
                     currentEntity.setIsActive(user.getIsActive());
                 }
 
-                // Only update password if a new one is provided (it's not blank or the default 'unknown')
-                if (user.getPassword() != null && !user.getPassword().isBlank() && !user.getPassword().equals("********")) {
+                // Only update password if a new one is provided
+                if (user.getPassword() != null && !user.getPassword().isBlank()) {
                     currentEntity.setPassword(passwordEncoder.encode(user.getPassword()));
                 }
 

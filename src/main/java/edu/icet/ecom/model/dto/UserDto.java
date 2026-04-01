@@ -1,5 +1,6 @@
 package edu.icet.ecom.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.icet.ecom.model.enums.Role;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -30,7 +31,7 @@ public class UserDto {
 
     private LocalDate membershipdate;
 
-    @NotBlank(message = "Password is required")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Size(min = 4, message = "Password must be at least 4 characters long")
     private String password;
 

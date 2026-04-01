@@ -43,9 +43,9 @@ public class AuthController {
         userDto.setRole(Role.USER);
         userService.save(userDto);
 
-        String subject = "Welcome to Enterprise Book Borrowing System";
+        String subject = "Welcome to Lumina Digital Library!";
         String message = "Hello " + userDto.getName() + ",\n\n" +
-                "Your account has been successfully created. Welcome to the Enterprise Book Borrowing System!\n" +
+                "Your account has been successfully created. Welcome to Lumina Digital Library!\n" +
                 "You can now log in and start borrowing your favorite books.\n\n" +
                 "Best Regards,\n" +
                 "Library Management Team";

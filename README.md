@@ -1,33 +1,44 @@
-# 📚 LibManager - Backend (Staff Portal)
+# 📚 Enterprise Book Borrowing System
 
-LibManager Backend is a robust RESTful API built with **Spring Boot** and **MySQL**. It handles the core business logic for book inventory, user memberships, and the circulation desk (borrowing/returning logic).
+A robust, fully automated, and enterprise-grade Library Management System built with **Spring Boot 3** and **Java 21**. This system provides a comprehensive API for managing library inventories, processing smart book borrowing workflows, and handling automated background tasks like fine calculations and email notifications.
 
-## 🚀 Tech Stack
-* **Language:** Java 17+
-* **Framework:** Spring Boot 3.x
-* **Database:** MySQL
-* **ORM:** Spring Data JPA / Hibernate
-* **Tools:** Postman (API Testing), IntelliJ IDEA, Maven
+---
 
-## ✨ Core Features
-- **Book Management:** Full CRUD (Create, Read, Update, Delete) and availability tracking.
-- **User Management:** Member registration and profile management.
-- **Borrowing Logic:** - Real-time validation (checks if User and Book IDs exist).
-  - Availability enforcement (prevents borrowing "Out of Stock" books).
-  - Status tracking (`BORROWED` vs `RETURNED`).
-- **Data Integrity:** Enforced database relationships between Books, Users, and Borrow Records.
+## ✨ Key Features
 
-## 🛠️ Database Schema
-The system maintains three primary entities:
-1.  **Books:** `id, title, author, category, availableCopies, availability`
-2.  **Users:** `id, name, email, phone, address, membershipdate`
-3.  **BorrowRecords:** `borrowid, userid, bookid, borrowdate, dueDate, returnDate, status`
+### 🔐 Security & Access Control
+* **JWT Authentication:** Highly secure, stateless API authentication.
+* **Role-Based Access Control (RBAC):** Distinct `ADMIN` and `USER` privileges.
+* **Auto-Initialization:** Automatically provisions a default Admin account (`admin@gmail.com`) upon initial system startup.
 
-## 🔌 API Endpoints (Quick Reference)
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/book/all` | Retrieve all books |
-| `POST` | `/book/save` | Add a new book |
-| `GET` | `/book/id/{id}` | Search book by ID |
-| `POST` | `/borrow/save` | Create a new rent record |
-| `GET` | `/borrow/history` | Get all transaction logs |
+### 📖 Smart Inventory Management
+* **Full CRUD Operations:** Seamlessly add, view, update, and delete books.
+* **Advanced Pagination & Search:** Search the catalog by title, author, or category with optimized paginated responses.
+* **Real-time Stock Tracking:** Automatically adjusts `availableCopies` and updates book status to "unavailable" when out of stock.
+
+### 🔄 Intelligent Borrowing Workflow
+* **State Machine Logic:** Books follow a strict `REQUESTED` ➔ `ISSUED` ➔ `RETURNED` lifecycle.
+* **Automated Due Dates:** Automatically calculates and assigns a 14-day borrowing period upon admin issuance.
+* **Personalized History:** Users can view their own borrowing history, while Admins can monitor the global ledger.
+
+### 🤖 Background Automations (Schedulers)
+* **Nightly Fine Processor:** A `@Scheduled` Cron job wakes up daily at Midnight (12:00 AM) to identify overdue books and automatically apply a late fine of Rs. 50/day.
+* **Automated Email Reminders:** A secondary Cron job runs at 8:00 AM daily, emailing users who have books due the following day.
+* **Welcome Notifications:** Automatically dispatches a welcome email to newly registered users.
+
+### ⚙️ Technical Highlights
+* **JPA Auditing:** Automatically tracks `createdAt` and `updatedAt` timestamps for all database records.
+* **DTO Mapping:** Clean data transfer objects powered by `ModelMapper`.
+* **Global Exception Handling:** Custom `@RestControllerAdvice` for standardizing API error responses.
+* **Docker Ready:** Includes a `Dockerfile` for seamless containerized deployment.
+
+---
+
+## 🛠️ Technology Stack
+
+* **Core:** Java 21, Spring Boot 3.x
+* **Security:** Spring Security, JSON Web Tokens (JWT)
+* **Database:** MySQL, Spring Data JPA, Hibernate
+* **Mail Service:** Spring Boot Starter Mail (JavaMailSender)
+* **Documentation:** Swagger UI
+* **Utilities:** Lombok, ModelMapper

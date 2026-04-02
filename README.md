@@ -1,6 +1,6 @@
 # 📚 Enterprise Book Borrowing System
 
-A robust, fully automated, and enterprise-grade Library Management System built with **Spring Boot 3** and **Java 21**. This system provides a comprehensive API for managing library inventories, processing smart book borrowing workflows, and handling automated background tasks like fine calculations and email notifications.
+A robust, fully automated, and enterprise-grade Library Management System built with **Spring Boot 4** and **Java 21**. This system provides a comprehensive API for managing library inventories, processing smart book borrowing workflows, and handling automated background tasks like fine calculations and email notifications.
 
 ---
 

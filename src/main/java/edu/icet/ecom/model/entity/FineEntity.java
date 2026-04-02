@@ -7,7 +7,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import edu.icet.ecom.model.enums.BookCategory;
+import edu.icet.ecom.model.enums.PaymentStatus;
 
 @Setter
 @Getter
@@ -16,33 +16,26 @@ import edu.icet.ecom.model.enums.BookCategory;
 @ToString
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class BookEntity {
+public class FineEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String title;
-
-    @Column(nullable = false)
-    private String author;
-
-    @Column(nullable = false)
-    private String publisher;
-
-    @Column(nullable = false)
-    private String isbn;
+    private Double fineAmount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BookCategory category;
+    private PaymentStatus paymentStatus;
 
-    @Column(nullable = false)
-    private int availableCopies;
+    @OneToOne
+    @JoinColumn(name = "borrowId", nullable = false)
+    private BorrowEntity borrowEntity;
 
-    @Column(nullable = false)
-    private boolean available = true;
+    @ManyToOne
+    @JoinColumn(name = "userId", nullable = false)
+    private UserEntity userEntity;
 
     @CreatedDate
     @Column(updatable = false)

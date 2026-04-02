@@ -2,7 +2,11 @@ package edu.icet.ecom.controller;
 
 import edu.icet.ecom.model.dto.UserDto;
 import edu.icet.ecom.service.UserService;
+import edu.icet.ecom.util.StandardResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,28 +20,68 @@ public class UserController {
     UserService userService;
 
     @PostMapping("/save")
-    public UserDto save(@RequestBody UserDto user){
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StandardResponse> save(@RequestBody UserDto user){
         userService.save(user);
-        return user;
+        return new ResponseEntity<>(
+                new StandardResponse(201, "User Saved Successfully", user),
+                HttpStatus.CREATED
+        );
     }
 
     @GetMapping("/all")
-    public List<UserDto> getDetails(){
-        return userService.getAllDetails();
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StandardResponse> getDetails(){
+        List<UserDto> allUsers = userService.getAllDetails();
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Success", allUsers),
+                HttpStatus.OK
+        );
     }
 
     @PutMapping("/update")
-    public void update(@RequestBody UserDto user){
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StandardResponse> updateUser(@RequestBody UserDto user){
         userService.updateUser(user);
+        return new ResponseEntity<>(
+                new StandardResponse(200, "User Updated Successfully", null),
+                HttpStatus.OK
+        );
     }
 
     @DeleteMapping("/delete/{id}")
-    public void delete(@PathVariable Long id){
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StandardResponse> deleteUser(@PathVariable Long id){
         userService.deleteUser(id);
+        return new ResponseEntity<>(
+                new StandardResponse(200, "User Deleted Successfully", null),
+                HttpStatus.OK
+        );
     }
 
-    @GetMapping("/search/{term}")
-    public List<UserDto> search(@PathVariable String term) {
-        return userService.searchUsers(term);
+    @GetMapping("/search/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StandardResponse> searchUserById(@PathVariable Long id){
+        UserDto user = userService.getUserById(id);
+        if (user != null) {
+            return new ResponseEntity<>(
+                    new StandardResponse(200, "Success", user),
+                    HttpStatus.OK
+            );
+        } else {
+            return new ResponseEntity<>(
+                    new StandardResponse(404, "User Not Found", null),
+                    HttpStatus.NOT_FOUND
+            );
+        }
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<StandardResponse> getTotalCount(){
+        long totalUsers = userService.getTotalCount();
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Success", totalUsers),
+                HttpStatus.OK
+        );
     }
 }

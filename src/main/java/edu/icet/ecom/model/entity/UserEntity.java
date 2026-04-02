@@ -1,9 +1,14 @@
 package edu.icet.ecom.model.entity;
 
+import edu.icet.ecom.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -11,6 +16,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @ToString
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class UserEntity {
 
     @Id
@@ -18,14 +24,34 @@ public class UserEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private String password;
+
     @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false, unique = true)
     private String email;
+
     @Column(nullable = false)
     private String phone;
+
     @Column(nullable = false)
     private String address;
+
     @Column(nullable = false)
     private LocalDate membershipdate;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT true")
+    private Boolean isActive = true;
+
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 }

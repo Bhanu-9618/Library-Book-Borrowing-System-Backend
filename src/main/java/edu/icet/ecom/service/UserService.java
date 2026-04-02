@@ -10,4 +10,6 @@ public interface UserService {
     void updateUser(UserDto user);
     void deleteUser(Long id);
     List<UserDto> searchUsers(String term);
+    UserDto getUserById(Long id);
+    long getTotalCount();
 }

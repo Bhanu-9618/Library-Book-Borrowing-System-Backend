@@ -2,6 +2,7 @@ package edu.icet.ecom.model.dto;
 
 import lombok.*;
 import java.time.LocalDate;
+import edu.icet.ecom.model.enums.BorrowStatus;
 
 @Setter
 @Getter
@@ -13,7 +14,7 @@ public class BorrowDto {
     private LocalDate borrowdate;
     private LocalDate dueDate;
     private LocalDate returnDate;
-    private String status;
+    private BorrowStatus status;
     private Long bookid;
     private Long userid;
 }

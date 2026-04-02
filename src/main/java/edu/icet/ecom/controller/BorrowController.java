@@ -1,8 +1,13 @@
 package edu.icet.ecom.controller;
 
 import edu.icet.ecom.model.dto.BorrowDto;
+import edu.icet.ecom.model.dto.OverdueResponseDto;
 import edu.icet.ecom.service.BorrowService;
+import edu.icet.ecom.util.StandardResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -15,22 +20,101 @@ public class BorrowController {
     BorrowService borrowService;
 
     @PostMapping("/save")
-    public String save(@RequestBody BorrowDto borrowDto){
-        return borrowService.saveDetails(borrowDto);
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public ResponseEntity<StandardResponse> save(@RequestBody BorrowDto borrowDto){
+        String result = borrowService.saveDetails(borrowDto);
+        return new ResponseEntity<>(
+                new StandardResponse(201, result, null),
+                HttpStatus.CREATED
+        );
     }
 
     @PutMapping("/update")
-    public String update(@RequestBody BorrowDto borrowDto) {
-        return borrowService.updateDetails(borrowDto);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StandardResponse> update(@RequestBody BorrowDto borrowDto) {
+        String result = borrowService.updateDetails(borrowDto);
+        return new ResponseEntity<>(
+                new StandardResponse(200, result, null),
+                HttpStatus.OK
+        );
     }
 
     @GetMapping("/all")
-    public List<BorrowDto> getAllHistory() {
-        return borrowService.getAllHistory();
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StandardResponse> getAllHistory() {
+        List<BorrowDto> history = borrowService.getAllHistory();
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Success", history),
+                HttpStatus.OK
+        );
     }
 
     @GetMapping("/search/{userid}")
-    public List<BorrowDto> getHistoryByUserId(@PathVariable Long userid) {
-        return borrowService.getHistoryByUserId(userid);
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public ResponseEntity<StandardResponse> getHistoryByUserId(@PathVariable Long userid) {
+        List<BorrowDto> history = borrowService.getHistoryByUserId(userid);
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Success", history),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<StandardResponse> getTotalBorrowCount() {
+        long count = borrowService.getTotalBorrowCount();
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Success", count),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/requested")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StandardResponse> getRequestedHistory() {
+        List<BorrowDto> history = borrowService.getRequestedHistory();
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Success", history),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/requested/count")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StandardResponse> getRequestedCount() {
+        long count = borrowService.getRequestedCount();
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Success", count),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/overdue")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StandardResponse> getOverdueHistory() {
+        List<OverdueResponseDto> history = borrowService.getOverdueHistory();
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Success", history),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/overdue/count")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StandardResponse> getOverdueCount() {
+        long count = borrowService.getOverdueCount();
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Success", count),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/issued/count")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StandardResponse> getIssuedCount() {
+        long count = borrowService.getIssuedCount();
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Success", count),
+                HttpStatus.OK
+        );
     }
 }

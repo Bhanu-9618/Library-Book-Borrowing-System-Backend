@@ -17,6 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -62,14 +67,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getAllDetails() {
-        List<UserEntity> userEntities = userRepository.findAll();
-        List<UserDto> users = new ArrayList<>();
-
-        for (UserEntity userEntity : userEntities) {
-            users.add(mapper.map(userEntity, UserDto.class));
-        }
-        return users;
+    public Map<String, Object> getAllDetails(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UserEntity> userPage = userRepository.findAll(pageable);
+        return createPaginatedUserResponse(userPage);
     }
 
     @Transactional
@@ -117,10 +118,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> searchUsers(String term) {
-        return userRepository.searchByTerm(term).stream()
-                .map(entity -> mapper.map(entity, UserDto.class))
-                .collect(Collectors.toList());
+    public Map<String, Object> searchUsers(String term, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UserEntity> userPage = userRepository.searchByTerm(term, pageable);
+        return createPaginatedUserResponse(userPage);
+    }
+
+    private Map<String, Object> createPaginatedUserResponse(Page<UserEntity> userPage) {
+        List<UserDto> users = new ArrayList<>();
+        for (UserEntity userEntity : userPage.getContent()) {
+            users.add(mapper.map(userEntity, UserDto.class));
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("users", users);
+        response.put("currentPage", userPage.getNumber());
+        response.put("totalItems", userPage.getTotalElements());
+        response.put("totalPages", userPage.getTotalPages());
+        return response;
     }
 
     @Override

@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
@@ -31,10 +31,25 @@ public class UserController {
 
     @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<StandardResponse> getDetails(){
-        List<UserDto> allUsers = userService.getAllDetails();
+    public ResponseEntity<StandardResponse> getDetails(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+        Map<String, Object> allUsers = userService.getAllDetails(page, size);
         return new ResponseEntity<>(
                 new StandardResponse(200, "Success", allUsers),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StandardResponse> searchUsers(
+            @RequestParam String term,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+        Map<String, Object> searchResult = userService.searchUsers(term, page, size);
+        return new ResponseEntity<>(
+                new StandardResponse(200, "Success", searchResult),
                 HttpStatus.OK
         );
     }

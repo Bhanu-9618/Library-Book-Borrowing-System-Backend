@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/borrow")
@@ -41,8 +42,10 @@ public class BorrowController {
 
     @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<StandardResponse> getAllHistory() {
-        List<BorrowDto> history = borrowService.getAllHistory();
+    public ResponseEntity<StandardResponse> getAllHistory(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Map<String, Object> history = borrowService.getAllHistory(page, size);
         return new ResponseEntity<>(
                 new StandardResponse(200, "Success", history),
                 HttpStatus.OK
@@ -51,8 +54,11 @@ public class BorrowController {
 
     @GetMapping("/search/{userid}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public ResponseEntity<StandardResponse> getHistoryByUserId(@PathVariable Long userid) {
-        List<BorrowDto> history = borrowService.getHistoryByUserId(userid);
+    public ResponseEntity<StandardResponse> getHistoryByUserId(
+            @PathVariable Long userid,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Map<String, Object> history = borrowService.getHistoryByUserId(userid, page, size);
         return new ResponseEntity<>(
                 new StandardResponse(200, "Success", history),
                 HttpStatus.OK
@@ -70,8 +76,10 @@ public class BorrowController {
 
     @GetMapping("/requested")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<StandardResponse> getRequestedHistory() {
-        List<BorrowDto> history = borrowService.getRequestedHistory();
+    public ResponseEntity<StandardResponse> getRequestedHistory(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Map<String, Object> history = borrowService.getRequestedHistory(page, size);
         return new ResponseEntity<>(
                 new StandardResponse(200, "Success", history),
                 HttpStatus.OK
@@ -90,8 +98,10 @@ public class BorrowController {
 
     @GetMapping("/overdue")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<StandardResponse> getOverdueHistory() {
-        List<OverdueResponseDto> history = borrowService.getOverdueHistory();
+    public ResponseEntity<StandardResponse> getOverdueHistory(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Map<String, Object> history = borrowService.getOverdueHistory(page, size);
         return new ResponseEntity<>(
                 new StandardResponse(200, "Success", history),
                 HttpStatus.OK

@@ -29,7 +29,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class BorrowServiceImpl implements BorrowService {
 
     @Autowired
@@ -50,6 +53,7 @@ public class BorrowServiceImpl implements BorrowService {
     @Override
     @Transactional
     public String saveDetails(BorrowDto borrowDto) {
+        log.info("Saving new borrow request for User ID: {}, Book ID: {}", borrowDto.getUserid(), borrowDto.getBookid());
         BookEntity book = bookRepository.findById(borrowDto.getBookid())
                 .orElseThrow(() -> new ResourceNotFoundException("Book Not Found!"));
 
@@ -82,6 +86,7 @@ public class BorrowServiceImpl implements BorrowService {
     @Override
     @Transactional
     public String updateDetails(BorrowDto borrowDto) {
+        log.info("Updating borrow record for Borrow ID: {}, New Status: {}", borrowDto.getBorrowid(), borrowDto.getStatus());
         BorrowEntity existingBorrow = borrowRepository.findById(borrowDto.getBorrowid())
                 .orElseThrow(() -> new ResourceNotFoundException("Borrow Record Not Found!"));
 
@@ -172,29 +177,27 @@ public class BorrowServiceImpl implements BorrowService {
                 .map(BorrowEntity::getBorrowid)
                 .collect(java.util.stream.Collectors.toList());
 
-        Map<Long, FineEntity> fineMap = new HashMap<>();
-        if (!borrowIds.isEmpty()) {
-            List<FineEntity> fines = fineRepository.findByBorrowEntity_BorrowidIn(borrowIds);
-            fineMap = fines.stream()
+        final Map<Long, FineEntity> fineMap = borrowIds.isEmpty() ? new HashMap<>() :
+            fineRepository.findByBorrowEntity_BorrowidIn(borrowIds).stream()
                     .collect(java.util.stream.Collectors.toMap(
                             f -> f.getBorrowEntity().getBorrowid(), f -> f));
-        }
 
-        List<OverdueResponseDto> list = new ArrayList<>();
-        for (BorrowEntity entity : borrowPage.getContent()) {
-            FineEntity fine = fineMap.get(entity.getBorrowid());
-            OverdueResponseDto dto = new OverdueResponseDto();
-            dto.setUserid(entity.getUserEntity().getId());
-            dto.setBorrowid(entity.getBorrowid());
-            if (fine != null) {
-                dto.setFineAmount(fine.getFineAmount());
-                dto.setPaymentStatus(fine.getPaymentStatus());
-            } else {
-                dto.setFineAmount(0.0);
-                dto.setPaymentStatus(PaymentStatus.UNPAID);
-            }
-            list.add(dto);
-        }
+        List<OverdueResponseDto> list = borrowPage.getContent().stream()
+                .map(entity -> {
+                    FineEntity fine = fineMap.get(entity.getBorrowid());
+                    OverdueResponseDto dto = new OverdueResponseDto();
+                    dto.setUserid(entity.getUserEntity().getId());
+                    dto.setBorrowid(entity.getBorrowid());
+                    if (fine != null) {
+                        dto.setFineAmount(fine.getFineAmount());
+                        dto.setPaymentStatus(fine.getPaymentStatus());
+                    } else {
+                        dto.setFineAmount(0.0);
+                        dto.setPaymentStatus(PaymentStatus.UNPAID);
+                    }
+                    return dto;
+                })
+                .collect(java.util.stream.Collectors.toList());
 
         Map<String, Object> response = new HashMap<>();
         response.put("history", list);
@@ -205,13 +208,14 @@ public class BorrowServiceImpl implements BorrowService {
     }
 
     private Map<String, Object> createPaginatedBorrowResponse(Page<BorrowEntity> borrowPage) {
-        List<BorrowDto> historyList = new ArrayList<>();
-        for (BorrowEntity entity : borrowPage.getContent()) {
-            BorrowDto dto = mapper.map(entity, BorrowDto.class);
-            if (entity.getBookEntity() != null) dto.setBookid(entity.getBookEntity().getId());
-            if (entity.getUserEntity() != null) dto.setUserid(entity.getUserEntity().getId());
-            historyList.add(dto);
-        }
+        List<BorrowDto> historyList = borrowPage.getContent().stream()
+                .map(entity -> {
+                    BorrowDto dto = mapper.map(entity, BorrowDto.class);
+                    if (entity.getBookEntity() != null) dto.setBookid(entity.getBookEntity().getId());
+                    if (entity.getUserEntity() != null) dto.setUserid(entity.getUserEntity().getId());
+                    return dto;
+                })
+                .collect(java.util.stream.Collectors.toList());
 
         Map<String, Object> response = new HashMap<>();
         response.put("history", historyList);

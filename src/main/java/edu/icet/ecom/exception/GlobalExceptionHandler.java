@@ -1,47 +1,35 @@
 package edu.icet.ecom.exception;
 
 import edu.icet.ecom.util.StandardResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<StandardResponse> handleNotFoundException(ResourceNotFoundException e) {
-        return new ResponseEntity<>(
-                new StandardResponse(404, "Not Found", e.getMessage()),
-                HttpStatus.NOT_FOUND
+    public ResponseEntity<StandardResponse> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        log.warn("Resource Not Found: {}", ex.getMessage());
+        StandardResponse response = new StandardResponse(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage(),
+                null
         );
-    }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<StandardResponse> handleAccessDeniedException(AccessDeniedException e) {
-        return new ResponseEntity<>(
-                new StandardResponse(403, "Access Denied", "You don't have permission for this action!"),
-                HttpStatus.FORBIDDEN
-        );
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<StandardResponse> handleGeneralException(Exception e) {
-        return new ResponseEntity<>(
-                new StandardResponse(500, "Internal Server Error", e.getMessage()),
-                HttpStatus.INTERNAL_SERVER_ERROR
+    public ResponseEntity<StandardResponse> handleGlobalException(Exception ex) {
+        log.error("Unhandled Global Exception: ", ex);
+        StandardResponse response = new StandardResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "An unexpected error occurred on the server.",
+                null
         );
-    }
-
-    @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
-    public ResponseEntity<StandardResponse> handleValidationExceptions(org.springframework.web.bind.MethodArgumentNotValidException ex) {
-
-        String errorMessage = ex.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
-
-        return new ResponseEntity<>(
-                new StandardResponse(400, "Validation Failed", errorMessage),
-                HttpStatus.BAD_REQUEST
-        );
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

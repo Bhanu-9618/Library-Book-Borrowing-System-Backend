@@ -7,11 +7,13 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 import edu.icet.ecom.model.enums.BorrowStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Repository
 public interface BorrowRepository extends JpaRepository<BorrowEntity, Long> {
 
-    List<BorrowEntity> findByUserEntity_Id(Long userId);
+    Page<BorrowEntity> findByUserEntity_Id(Long userId, Pageable pageable);
 
     List<BorrowEntity> findByStatusAndDueDateBefore(BorrowStatus status, LocalDate date);
 
@@ -19,7 +21,7 @@ public interface BorrowRepository extends JpaRepository<BorrowEntity, Long> {
 
     List<BorrowEntity> findByStatusAndDueDate(BorrowStatus status, LocalDate date);
 
-    List<BorrowEntity> findByStatus(BorrowStatus status);
+    Page<BorrowEntity> findByStatus(BorrowStatus status, Pageable pageable);
 
     long countByStatus(BorrowStatus status);
 }

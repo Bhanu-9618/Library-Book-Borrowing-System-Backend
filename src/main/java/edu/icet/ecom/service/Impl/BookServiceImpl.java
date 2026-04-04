@@ -18,7 +18,10 @@ import java.util.List;
 import java.util.Map;
 import edu.icet.ecom.model.enums.BookCategory;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class BookServiceImpl implements BookService {
 
     @Autowired
@@ -29,23 +32,21 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void add(BookDto bookDto) {
+        log.info("Adding new book record");
         BookEntity entity = mapper.map(bookDto, BookEntity.class);
         bookRepository.save(entity);
     }
 
     @Override
     public List<BookDto> getAllDetails() throws Exception {
-        List<BookEntity> entityList = bookRepository.findAll();
-        List<BookDto> bookList = new ArrayList<>();
-
-        for (BookEntity entity : entityList) {
-            bookList.add(mapper.map(entity, BookDto.class));
-        }
-        return bookList;
+        return bookRepository.findAll().stream()
+                .map(entity -> mapper.map(entity, BookDto.class))
+                .collect(java.util.stream.Collectors.toList());
     }
 
     @Override
     public void update(BookDto bookDto) {
+        log.info("Updating book record for ID: {}", bookDto.getId());
         if (!bookRepository.existsById(bookDto.getId())) {
             throw new ResourceNotFoundException("Book Not Found!");
         }
@@ -55,6 +56,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void delete(Long id) {
+        log.info("Deleting book record for ID: {}", id);
         if (!bookRepository.existsById(id)) {
             throw new ResourceNotFoundException("Book Not Found!");
         }
@@ -88,11 +90,9 @@ public class BookServiceImpl implements BookService {
     }
 
     private Map<String, Object> createPaginatedResponse(Page<BookEntity> bookPage) {
-        List<BookDto> bookDtos = new ArrayList<>();
-
-        for (BookEntity entity : bookPage.getContent()) {
-            bookDtos.add(mapper.map(entity, BookDto.class));
-        }
+        List<BookDto> bookDtos = bookPage.getContent().stream()
+                .map(entity -> mapper.map(entity, BookDto.class))
+                .collect(java.util.stream.Collectors.toList());
 
         Map<String, Object> response = new HashMap<>();
         response.put("books", bookDtos);

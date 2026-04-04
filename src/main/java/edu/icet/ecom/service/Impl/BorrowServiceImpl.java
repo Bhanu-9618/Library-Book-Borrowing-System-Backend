@@ -19,13 +19,20 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import edu.icet.ecom.model.enums.BorrowStatus;
 import edu.icet.ecom.model.enums.PaymentStatus;
 import edu.icet.ecom.model.dto.OverdueResponseDto;
 import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class BorrowServiceImpl implements BorrowService {
 
     @Autowired
@@ -46,6 +53,7 @@ public class BorrowServiceImpl implements BorrowService {
     @Override
     @Transactional
     public String saveDetails(BorrowDto borrowDto) {
+        log.info("Saving new borrow request for User ID: {}, Book ID: {}", borrowDto.getUserid(), borrowDto.getBookid());
         BookEntity book = bookRepository.findById(borrowDto.getBookid())
                 .orElseThrow(() -> new ResourceNotFoundException("Book Not Found!"));
 
@@ -78,6 +86,7 @@ public class BorrowServiceImpl implements BorrowService {
     @Override
     @Transactional
     public String updateDetails(BorrowDto borrowDto) {
+        log.info("Updating borrow record for Borrow ID: {}, New Status: {}", borrowDto.getBorrowid(), borrowDto.getStatus());
         BorrowEntity existingBorrow = borrowRepository.findById(borrowDto.getBorrowid())
                 .orElseThrow(() -> new ResourceNotFoundException("Borrow Record Not Found!"));
 
@@ -129,33 +138,17 @@ public class BorrowServiceImpl implements BorrowService {
     }
 
     @Override
-    public List<BorrowDto> getAllHistory() {
-        List<BorrowEntity> entities = borrowRepository.findAll();
-        List<BorrowDto> historyList = new ArrayList<>();
-
-        for (BorrowEntity entity : entities) {
-            BorrowDto dto = mapper.map(entity, BorrowDto.class);
-            dto.setBookid(entity.getBookEntity().getId());
-            dto.setUserid(entity.getUserEntity().getId());
-            historyList.add(dto);
-        }
-        return historyList;
+    public Map<String, Object> getAllHistory(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<BorrowEntity> borrowPage = borrowRepository.findAll(pageable);
+        return createPaginatedBorrowResponse(borrowPage);
     }
 
     @Override
-    public List<BorrowDto> getHistoryByUserId(Long userid) {
-        List<BorrowEntity> entities = borrowRepository.findByUserEntity_Id(userid);
-
-        return entities.stream().map(entity -> {
-            BorrowDto dto = mapper.map(entity, BorrowDto.class);
-            if (entity.getUserEntity() != null) {
-                dto.setUserid(entity.getUserEntity().getId());
-            }
-            if (entity.getBookEntity() != null) {
-                dto.setBookid(entity.getBookEntity().getId());
-            }
-            return dto;
-        }).collect(Collectors.toList());
+    public Map<String, Object> getHistoryByUserId(Long userid, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<BorrowEntity> borrowPage = borrowRepository.findByUserEntity_Id(userid, pageable);
+        return createPaginatedBorrowResponse(borrowPage);
     }
 
     @Override
@@ -164,14 +157,10 @@ public class BorrowServiceImpl implements BorrowService {
     }
 
     @Override
-    public List<BorrowDto> getRequestedHistory() {
-        List<BorrowEntity> entities = borrowRepository.findByStatus(BorrowStatus.REQUESTED);
-        return entities.stream().map(entity -> {
-            BorrowDto dto = mapper.map(entity, BorrowDto.class);
-            if (entity.getUserEntity() != null) dto.setUserid(entity.getUserEntity().getId());
-            if (entity.getBookEntity() != null) dto.setBookid(entity.getBookEntity().getId());
-            return dto;
-        }).collect(Collectors.toList());
+    public Map<String, Object> getRequestedHistory(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<BorrowEntity> borrowPage = borrowRepository.findByStatus(BorrowStatus.REQUESTED, pageable);
+        return createPaginatedBorrowResponse(borrowPage);
     }
 
     @Override
@@ -180,24 +169,60 @@ public class BorrowServiceImpl implements BorrowService {
     }
 
     @Override
-    public List<OverdueResponseDto> getOverdueHistory() {
-        List<BorrowEntity> overdueEntities = borrowRepository.findByStatus(BorrowStatus.OVERDUE);
-        List<OverdueResponseDto> list = new ArrayList<>();
-        for (BorrowEntity entity : overdueEntities) {
-            Optional<FineEntity> fineOpt = fineRepository.findByBorrowEntity_Borrowid(entity.getBorrowid());
-            OverdueResponseDto dto = new OverdueResponseDto();
-            dto.setUserid(entity.getUserEntity().getId());
-            dto.setBorrowid(entity.getBorrowid());
-            if (fineOpt.isPresent()) {
-                dto.setFineAmount(fineOpt.get().getFineAmount());
-                dto.setPaymentStatus(fineOpt.get().getPaymentStatus());
-            } else {
-                dto.setFineAmount(0.0);
-                dto.setPaymentStatus(PaymentStatus.UNPAID);
-            }
-            list.add(dto);
-        }
-        return list;
+    public Map<String, Object> getOverdueHistory(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<BorrowEntity> borrowPage = borrowRepository.findByStatus(BorrowStatus.OVERDUE, pageable);
+
+        List<Long> borrowIds = borrowPage.getContent().stream()
+                .map(BorrowEntity::getBorrowid)
+                .collect(java.util.stream.Collectors.toList());
+
+        final Map<Long, FineEntity> fineMap = borrowIds.isEmpty() ? new HashMap<>() :
+            fineRepository.findByBorrowEntity_BorrowidIn(borrowIds).stream()
+                    .collect(java.util.stream.Collectors.toMap(
+                            f -> f.getBorrowEntity().getBorrowid(), f -> f));
+
+        List<OverdueResponseDto> list = borrowPage.getContent().stream()
+                .map(entity -> {
+                    FineEntity fine = fineMap.get(entity.getBorrowid());
+                    OverdueResponseDto dto = new OverdueResponseDto();
+                    dto.setUserid(entity.getUserEntity().getId());
+                    dto.setBorrowid(entity.getBorrowid());
+                    if (fine != null) {
+                        dto.setFineAmount(fine.getFineAmount());
+                        dto.setPaymentStatus(fine.getPaymentStatus());
+                    } else {
+                        dto.setFineAmount(0.0);
+                        dto.setPaymentStatus(PaymentStatus.UNPAID);
+                    }
+                    return dto;
+                })
+                .collect(java.util.stream.Collectors.toList());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("history", list);
+        response.put("currentPage", borrowPage.getNumber());
+        response.put("totalItems", borrowPage.getTotalElements());
+        response.put("totalPages", borrowPage.getTotalPages());
+        return response;
+    }
+
+    private Map<String, Object> createPaginatedBorrowResponse(Page<BorrowEntity> borrowPage) {
+        List<BorrowDto> historyList = borrowPage.getContent().stream()
+                .map(entity -> {
+                    BorrowDto dto = mapper.map(entity, BorrowDto.class);
+                    if (entity.getBookEntity() != null) dto.setBookid(entity.getBookEntity().getId());
+                    if (entity.getUserEntity() != null) dto.setUserid(entity.getUserEntity().getId());
+                    return dto;
+                })
+                .collect(java.util.stream.Collectors.toList());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("history", historyList);
+        response.put("currentPage", borrowPage.getNumber());
+        response.put("totalItems", borrowPage.getTotalElements());
+        response.put("totalPages", borrowPage.getTotalPages());
+        return response;
     }
 
     @Override

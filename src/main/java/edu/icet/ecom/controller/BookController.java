@@ -15,7 +15,6 @@ import edu.icet.ecom.model.enums.BookCategory;
 
 @RestController
 @RequestMapping("/book")
-@CrossOrigin(origins = "*")
 public class BookController {
 
     @Autowired

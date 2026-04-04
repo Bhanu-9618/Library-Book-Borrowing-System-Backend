@@ -7,8 +7,10 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class JwtUtils {
 
     @Value("${JWT_SECRET}")
@@ -47,6 +49,7 @@ public class JwtUtils {
                     .parseSignedClaims(authToken);
             return true;
         } catch (Exception e) {
+            log.error("JWT Token Validation Error: {}", e.getMessage());
             return false;
         }
     }

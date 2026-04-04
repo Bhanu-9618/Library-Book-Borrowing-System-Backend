@@ -168,15 +168,27 @@ public class BorrowServiceImpl implements BorrowService {
         Pageable pageable = PageRequest.of(page, size);
         Page<BorrowEntity> borrowPage = borrowRepository.findByStatus(BorrowStatus.OVERDUE, pageable);
 
+        List<Long> borrowIds = borrowPage.getContent().stream()
+                .map(BorrowEntity::getBorrowid)
+                .collect(java.util.stream.Collectors.toList());
+
+        Map<Long, FineEntity> fineMap = new HashMap<>();
+        if (!borrowIds.isEmpty()) {
+            List<FineEntity> fines = fineRepository.findByBorrowEntity_BorrowidIn(borrowIds);
+            fineMap = fines.stream()
+                    .collect(java.util.stream.Collectors.toMap(
+                            f -> f.getBorrowEntity().getBorrowid(), f -> f));
+        }
+
         List<OverdueResponseDto> list = new ArrayList<>();
         for (BorrowEntity entity : borrowPage.getContent()) {
-            Optional<FineEntity> fineOpt = fineRepository.findByBorrowEntity_Borrowid(entity.getBorrowid());
+            FineEntity fine = fineMap.get(entity.getBorrowid());
             OverdueResponseDto dto = new OverdueResponseDto();
             dto.setUserid(entity.getUserEntity().getId());
             dto.setBorrowid(entity.getBorrowid());
-            if (fineOpt.isPresent()) {
-                dto.setFineAmount(fineOpt.get().getFineAmount());
-                dto.setPaymentStatus(fineOpt.get().getPaymentStatus());
+            if (fine != null) {
+                dto.setFineAmount(fine.getFineAmount());
+                dto.setPaymentStatus(fine.getPaymentStatus());
             } else {
                 dto.setFineAmount(0.0);
                 dto.setPaymentStatus(PaymentStatus.UNPAID);

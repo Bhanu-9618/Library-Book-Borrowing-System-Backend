@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/fine")
-@CrossOrigin(origins = "*")
 public class FineController {
 
     @Autowired

@@ -2,6 +2,7 @@ package edu.icet.ecom.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -10,8 +11,11 @@ import java.util.Date;
 @Component
 public class JwtUtils {
 
-    private final String jwtSecret = "MY_SUPER_SECRET_KEY_FOR_LIBRARY_SYSTEM_2026";
-    private final int jwtExpirationMs = 86400000;
+    @Value("${JWT_SECRET}")
+    private String jwtSecret;
+
+    @Value("${JWT_EXPIRATION_MS}")
+    private int jwtExpirationMs;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));

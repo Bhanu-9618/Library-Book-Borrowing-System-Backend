@@ -1,44 +1,40 @@
-# 📚 Enterprise Book Borrowing System
+# 📚 Lumina Library - Enterprise Backend
 
-A robust, fully automated, and enterprise-grade Library Management System built with **Spring Boot 4** and **Java 21**. This system provides a comprehensive API for managing library inventories, processing smart book borrowing workflows, and handling automated background tasks like fine calculations and email notifications.
+A robust, enterprise-grade Library Management System built with **Spring Boot** and **Java 21**. This system handles complex library workflows, automated fine calculations, and real-time notifications with a focus on scalability and security.
+
+---
+
+## 🚀 Live Deployment
+* **Backend:** Successfully hosted on **Render**
+* **Frontend:** Seamlessly deployed on **Vercel**
+* **Database:** Managed via **Aiven (PostgreSQL/MySQL)**
 
 ---
 
 ## ✨ Key Features
 
 ### 🔐 Security & Access Control
-* **JWT Authentication:** Highly secure, stateless API authentication.
-* **Role-Based Access Control (RBAC):** Distinct `ADMIN` and `USER` privileges.
-* **Auto-Initialization:** Automatically provisions a default Admin account (`admin@gmail.com`) upon initial system startup.
+* **JWT Authentication:** Stateless and secure API access.
+* **Role-Based Access Control (RBAC):** Distinct permissions for `ADMIN` and `USER`.
+* **Auto-Provisioning:** Automatically creates a default Admin account on initial startup.
 
-### 📖 Smart Inventory Management
-* **Full CRUD Operations:** Seamlessly add, view, update, and delete books.
-* **Advanced Pagination & Search:** Search the catalog by title, author, or category with optimized paginated responses.
-* **Real-time Stock Tracking:** Automatically adjusts `availableCopies` and updates book status to "unavailable" when out of stock.
+### 📖 Inventory & Borrowing
+* **Smart Catalog:** Advanced search and pagination for books, authors, and categories.
+* **Real-time Tracking:** Automated stock management and availability updates.
+* **Lifecycle Management:** Intelligent book state machine (`REQUESTED` ➔ `ISSUED` ➔ `RETURNED`).
 
-### 🔄 Intelligent Borrowing Workflow
-* **State Machine Logic:** Books follow a strict `REQUESTED` ➔ `ISSUED` ➔ `RETURNED` lifecycle.
-* **Automated Due Dates:** Automatically calculates and assigns a 14-day borrowing period upon admin issuance.
-* **Personalized History:** Users can view their own borrowing history, while Admins can monitor the global ledger.
-
-### 🤖 Background Automations (Schedulers)
-* **Nightly Fine Processor:** A `@Scheduled` Cron job wakes up daily at Midnight (12:00 AM) to identify overdue books and automatically apply a late fine of Rs. 50/day.
-* **Automated Email Reminders:** A secondary Cron job runs at 8:00 AM daily, emailing users who have books due the following day.
-* **Welcome Notifications:** Automatically dispatches a welcome email to newly registered users.
-
-### ⚙️ Technical Highlights
-* **JPA Auditing:** Automatically tracks `createdAt` and `updatedAt` timestamps for all database records.
-* **DTO Mapping:** Clean data transfer objects powered by `ModelMapper`.
-* **Global Exception Handling:** Custom `@RestControllerAdvice` for standardizing API error responses.
-* **Docker Ready:** Includes a `Dockerfile` for seamless containerized deployment.
+### 🤖 Automated Background Tasks
+* **Fine Engine:** Daily scheduled job to calculate overdue fines (Rs. 50/day).
+* **Smart Notifications:** Automated email reminders for due dates and welcome emails for new users.
+* **Audit Logging:** JPA auditing to track every record’s creation and modification.
 
 ---
 
 ## 🛠️ Technology Stack
 
-* **Core:** Java 21, Spring Boot 3.x
-* **Security:** Spring Security, JSON Web Tokens (JWT)
-* **Database:** MySQL, Spring Data JPA, Hibernate
-* **Mail Service:** Spring Boot Starter Mail (JavaMailSender)
-* **Documentation:** Swagger UI
-* **Utilities:** Lombok, ModelMapper
+* **Framework:** Java 21, Spring Boot 3.x
+* **Security:** Spring Security, JWT
+* **Persistence:** Spring Data JPA, Hibernate
+* **Database:** Managed Cloud Database (Aiven)
+* **API Docs:** Swagger UI / OpenAPI
+* **Utilities:** Lombok, ModelMapper, Docker

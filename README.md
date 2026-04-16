@@ -4,13 +4,6 @@ A robust, enterprise-grade Library Management System built with **Spring Boot** 
 
 ---
 
-## 🚀 Live Deployment
-* **Backend:** Successfully hosted on **Render**
-* **Frontend:** Seamlessly deployed on **Vercel**
-* **Database:** Managed via **Aiven (PostgreSQL/MySQL)**
-
----
-
 ## ✨ Key Features
 
 ### 🔐 Security & Access Control

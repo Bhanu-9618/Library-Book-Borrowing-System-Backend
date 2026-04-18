@@ -1,33 +1,51 @@
 # 📚 Lumina Library - Enterprise Backend
 
-A robust, enterprise-grade Library Management System built with **Spring Boot** and **Java 21**. This system handles complex library workflows, automated fine calculations, and real-time notifications with a focus on scalability and security.
+A robust, enterprise-grade Spring Boot backend designed to automate library operations, including inventory management, borrowing workflows, and automated fine calculations.
 
 ---
 
-## ✨ Key Features
+## Implemented Features
 
-### 🔐 Security & Access Control
-* **JWT Authentication:** Stateless and secure API access.
-* **Role-Based Access Control (RBAC):** Distinct permissions for `ADMIN` and `USER`.
-* **Auto-Provisioning:** Automatically creates a default Admin account on initial startup.
+### 1. Advanced Security & Authentication
+* **JWT Authentication:** Secure stateless authentication using JSON Web Tokens.
+* **Role-Based Access Control (RBAC):** Distinct permissions for `ADMIN` and `USER` roles.
+* **Password Security:** Industry-standard password hashing using `BCrypt`.
+* **Secure Sign-up:** New users are automatically assigned roles and verified through the system.
 
-### 📖 Inventory & Borrowing
-* **Smart Catalog:** Advanced search and pagination for books, authors, and categories.
-* **Real-time Tracking:** Automated stock management and availability updates.
-* **Lifecycle Management:** Intelligent book state machine (`REQUESTED` ➔ `ISSUED` ➔ `RETURNED`).
+### 2. Comprehensive Book Management
+* **Full CRUD:** Create, Read, Update, and Delete books.
+* **Real-time Inventory:** Automatically tracks `availableCopies` and toggles book availability status.
+* **Paginated Search:** Efficient retrieval of book records with advanced search filters.
 
-### 🤖 Automated Background Tasks
-* **Fine Engine:** Daily scheduled job to calculate overdue fines (Rs. 50/day).
-* **Smart Notifications:** Automated email reminders for due dates and welcome emails for new users.
-* **Audit Logging:** JPA auditing to track every record’s creation and modification.
+### 3. Core Borrowing Logic
+* **Request Workflow:** Users can request books; admins approve and issue them.
+* **Status Tracking:** Precise tracking through `REQUESTED`, `ISSUED`, `RETURNED`, and `OVERDUE` states.
+* **Automated Date Handling:** System automatically sets 14-day due dates upon issuance and logs return dates.
+
+### 4. Automated Fine Management
+* **Dynamic Calculation:** System automatically detects late returns and calculates fines at a rate of Rs. 50.00 per day.
+* **Payment Integration Logic:** Admins can mark fines as `PAID`, which automatically triggers inventory restock and status updates.
+* **Fine History:** Detailed tracking of paid/unpaid penalties per user.
+
+### 5. Automated Background Tasks (Schedulers)
+* **Daily Fine Updates:** A background cron job runs every midnight to identify overdue books and increment fines.
+* **Email Reminders:** Automated email service that sends return reminders to users 24 hours before their book is due.
+* **Notification System:** Sends "Welcome" emails to new users and "Fine Notifications" upon late returns.
+
+### 6. Professional-Grade Quality Assurance
+* **76% Test Coverage:** Verified through `JUnit 5` and `Mockito`.
+* **Performance Optimized:** Paginated API responses to ensure fast performance even with thousands of records.
+* **Soft Delete:** Implemented soft-deletion for users to maintain historical data integrity.
 
 ---
 
-## 🛠️ Technology Stack
+## 🛠 Tech Stack
 
-* **Framework:** Java 21, Spring Boot 3.x
-* **Security:** Spring Security, JWT
-* **Persistence:** Spring Data JPA, Hibernate
-* **Database:** Managed Cloud Database (Aiven)
-* **API Docs:** Swagger UI / OpenAPI
-* **Utilities:** Lombok, ModelMapper, Docker
+| Technology / Tool | Description |
+| :--- | :--- |
+| **Framework** | Spring Boot 3.4.1 |
+| **Language** | Java 17+ |
+| **Security** | Spring Security 6 (with JWT) |
+| **Database** | Spring Data JPA |
+| **Testing** | JUnit 5, Mockito, MockMvc, JaCoCo |
+| **Utilities** | ModelMapper, Lombok, JavaMailSender |
